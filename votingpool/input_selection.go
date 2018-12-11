@@ -21,11 +21,11 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/ltcsuite/ltcd/chaincfg"
-	"github.com/ltcsuite/ltcd/txscript"
-	"github.com/ltcsuite/ltcutil"
-	"github.com/ltcsuite/ltcwallet/walletdb"
-	"github.com/ltcsuite/ltcwallet/wtxmgr"
+	"github.com/qtumatomicswap/qtumd/chaincfg"
+	"github.com/qtumatomicswap/qtumd/txscript"
+	"github.com/qtumatomicswap/qtumutil"
+	"github.com/qtumatomicswap/qtumwallet/walletdb"
+	"github.com/qtumatomicswap/qtumwallet/wtxmgr"
 )
 
 const eligibleInputMinConfirmations = 100
@@ -100,7 +100,7 @@ func (c byAddress) Less(i, j int) bool {
 // and the last used address of lastSeriesID. They're reverse ordered based on
 // their address.
 func (p *Pool) getEligibleInputs(ns, addrmgrNs walletdb.ReadBucket, store *wtxmgr.Store, txmgrNs walletdb.ReadBucket, startAddress WithdrawalAddress,
-	lastSeriesID uint32, dustThreshold ltcutil.Amount, chainHeight int32,
+	lastSeriesID uint32, dustThreshold qtumutil.Amount, chainHeight int32,
 	minConf int) ([]credit, error) {
 
 	if p.Series(lastSeriesID) == nil {
@@ -238,7 +238,7 @@ func groupCreditsByAddr(credits []wtxmgr.Credit, chainParams *chaincfg.Params) (
 // to number of confirmations, the dust threshold and that it is not
 // the charter output.
 func (p *Pool) isCreditEligible(c credit, minConf int, chainHeight int32,
-	dustThreshold ltcutil.Amount) bool {
+	dustThreshold qtumutil.Amount) bool {
 	if c.Amount < dustThreshold {
 		return false
 	}

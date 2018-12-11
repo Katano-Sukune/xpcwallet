@@ -7,14 +7,14 @@
 package helpers
 
 import (
-	"github.com/ltcsuite/ltcd/wire"
-	"github.com/ltcsuite/ltcutil"
+	"github.com/qtumatomicswap/qtumd/wire"
+	"github.com/qtumatomicswap/qtumutil"
 )
 
 // SumOutputValues sums up the list of TxOuts and returns an Amount.
-func SumOutputValues(outputs []*wire.TxOut) (totalOutput ltcutil.Amount) {
+func SumOutputValues(outputs []*wire.TxOut) (totalOutput qtumutil.Amount) {
 	for _, txOut := range outputs {
-		totalOutput += ltcutil.Amount(txOut.Value)
+		totalOutput += qtumutil.Amount(txOut.Value)
 	}
 	return totalOutput
 }

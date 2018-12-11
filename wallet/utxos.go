@@ -6,9 +6,9 @@
 package wallet
 
 import (
-	"github.com/ltcsuite/ltcd/txscript"
-	"github.com/ltcsuite/ltcd/wire"
-	"github.com/ltcsuite/ltcwallet/walletdb"
+	"github.com/qtumatomicswap/qtumd/txscript"
+	"github.com/qtumatomicswap/qtumd/wire"
+	"github.com/qtumatomicswap/qtumwallet/walletdb"
 )
 
 // OutputSelectionPolicy describes the rules for selecting an output from the

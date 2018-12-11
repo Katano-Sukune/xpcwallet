@@ -8,12 +8,12 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/ltcsuite/ltcd/txscript"
-	"github.com/ltcsuite/ltcutil"
-	"github.com/ltcsuite/ltcutil/hdkeychain"
-	"github.com/ltcsuite/ltcwallet/internal/zero"
-	"github.com/ltcsuite/ltcwallet/waddrmgr"
-	"github.com/ltcsuite/ltcwallet/walletdb"
+	"github.com/qtumatomicswap/qtumd/txscript"
+	"github.com/qtumatomicswap/qtumutil"
+	"github.com/qtumatomicswap/qtumutil/hdkeychain"
+	"github.com/qtumatomicswap/qtumwallet/internal/zero"
+	"github.com/qtumatomicswap/qtumwallet/waddrmgr"
+	"github.com/qtumatomicswap/qtumwallet/walletdb"
 )
 
 const (
@@ -61,7 +61,7 @@ type PoolAddress interface {
 
 type poolAddress struct {
 	pool     *Pool
-	addr     ltcutil.Address
+	addr     qtumutil.Address
 	script   []byte
 	seriesID uint32
 	branch   Branch
@@ -508,7 +508,7 @@ func branchOrder(pks []*hdkeychain.ExtendedKey, branch Branch) ([]*hdkeychain.Ex
 
 // DepositScriptAddress calls DepositScript to get a multi-signature
 // redemption script and returns the pay-to-script-hash-address for that script.
-func (p *Pool) DepositScriptAddress(seriesID uint32, branch Branch, index Index) (ltcutil.Address, error) {
+func (p *Pool) DepositScriptAddress(seriesID uint32, branch Branch, index Index) (qtumutil.Address, error) {
 	script, err := p.DepositScript(seriesID, branch, index)
 	if err != nil {
 		return nil, err
@@ -516,9 +516,9 @@ func (p *Pool) DepositScriptAddress(seriesID uint32, branch Branch, index Index)
 	return p.addressFor(script)
 }
 
-func (p *Pool) addressFor(script []byte) (ltcutil.Address, error) {
-	scriptHash := ltcutil.Hash160(script)
-	return ltcutil.NewAddressScriptHashFromHash(scriptHash, p.manager.ChainParams())
+func (p *Pool) addressFor(script []byte) (qtumutil.Address, error) {
+	scriptHash := qtumutil.Hash160(script)
+	return qtumutil.NewAddressScriptHashFromHash(scriptHash, p.manager.ChainParams())
 }
 
 // DepositScript constructs and returns a multi-signature redemption script where
@@ -536,7 +536,7 @@ func (p *Pool) DepositScript(seriesID uint32, branch Branch, index Index) ([]byt
 		return nil, err
 	}
 
-	pks := make([]*ltcutil.AddressPubKey, len(pubKeys))
+	pks := make([]*qtumutil.AddressPubKey, len(pubKeys))
 	for i, key := range pubKeys {
 		child, err := key.Child(uint32(index))
 		// TODO: implement getting the next index until we find a valid one,
@@ -550,7 +550,7 @@ func (p *Pool) DepositScript(seriesID uint32, branch Branch, index Index) ([]byt
 			str := fmt.Sprintf("child #%d for this pubkey %d does not exist", index, i)
 			return nil, newError(ErrKeyChain, str, err)
 		}
-		pks[i], err = ltcutil.NewAddressPubKey(pubkey.SerializeCompressed(),
+		pks[i], err = qtumutil.NewAddressPubKey(pubkey.SerializeCompressed(),
 			p.manager.ChainParams())
 		if err != nil {
 			str := fmt.Sprintf(
@@ -740,7 +740,7 @@ func (p *Pool) addUsedAddr(ns, addrmgrNs walletdb.ReadWriteBucket, seriesID uint
 		return err
 	}
 
-	encryptedHash, err := p.manager.Encrypt(waddrmgr.CKTPublic, ltcutil.Hash160(script))
+	encryptedHash, err := p.manager.Encrypt(waddrmgr.CKTPublic, qtumutil.Hash160(script))
 	if err != nil {
 		return newError(ErrCrypto, "failed to encrypt script hash", err)
 	}
@@ -767,7 +767,7 @@ func (p *Pool) getUsedAddr(ns, addrmgrNs walletdb.ReadBucket, seriesID uint32, b
 	if err != nil {
 		return nil, newError(ErrCrypto, "failed to decrypt stored script hash", err)
 	}
-	addr, err := ltcutil.NewAddressScriptHashFromHash(hash, mgr.ChainParams())
+	addr, err := qtumutil.NewAddressScriptHashFromHash(hash, mgr.ChainParams())
 	if err != nil {
 		return nil, newError(ErrInvalidScriptHash, "failed to parse script hash", err)
 	}

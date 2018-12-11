@@ -5,11 +5,11 @@
 package wallet
 
 import (
-	"github.com/ltcsuite/ltcd/txscript"
-	"github.com/ltcsuite/ltcwallet/chain"
-	"github.com/ltcsuite/ltcwallet/waddrmgr"
-	"github.com/ltcsuite/ltcwallet/walletdb"
-	"github.com/ltcsuite/ltcwallet/wtxmgr"
+	"github.com/qtumatomicswap/qtumd/txscript"
+	"github.com/qtumatomicswap/qtumwallet/chain"
+	"github.com/qtumatomicswap/qtumwallet/waddrmgr"
+	"github.com/qtumatomicswap/qtumwallet/walletdb"
+	"github.com/qtumatomicswap/qtumwallet/wtxmgr"
 )
 
 func (w *Wallet) handleChainNotifications() {

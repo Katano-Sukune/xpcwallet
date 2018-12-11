@@ -23,14 +23,14 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/ltcsuite/ltcd/chaincfg"
-	"github.com/ltcsuite/ltcd/txscript"
-	"github.com/ltcsuite/ltcutil"
-	"github.com/ltcsuite/ltcwallet/votingpool"
-	"github.com/ltcsuite/ltcwallet/waddrmgr"
-	"github.com/ltcsuite/ltcwallet/walletdb"
-	_ "github.com/ltcsuite/ltcwallet/walletdb/bdb"
-	"github.com/ltcsuite/ltcwallet/wtxmgr"
+	"github.com/qtumatomicswap/qtumd/chaincfg"
+	"github.com/qtumatomicswap/qtumd/txscript"
+	"github.com/qtumatomicswap/qtumutil"
+	"github.com/qtumatomicswap/qtumwallet/votingpool"
+	"github.com/qtumatomicswap/qtumwallet/waddrmgr"
+	"github.com/qtumatomicswap/qtumwallet/walletdb"
+	_ "github.com/qtumatomicswap/qtumwallet/walletdb/bdb"
+	"github.com/qtumatomicswap/qtumwallet/wtxmgr"
 )
 
 var (
@@ -206,7 +206,7 @@ func Example_startWithdrawal() {
 		}
 		defer mgr.Lock()
 
-		addr, _ := ltcutil.DecodeAddress("1MirQ9bwyQcGVJPwKUgapu5ouK2E2Ey4gX", mgr.ChainParams())
+		addr, _ := qtumutil.DecodeAddress("1MirQ9bwyQcGVJPwKUgapu5ouK2E2Ey4gX", mgr.ChainParams())
 		pkScript, _ := txscript.PayToAddrScript(addr)
 		requests := []votingpool.OutputRequest{
 			{
@@ -233,7 +233,7 @@ func Example_startWithdrawal() {
 			return err
 		}
 		lastSeriesID := seriesID
-		dustThreshold := ltcutil.Amount(1e4)
+		dustThreshold := qtumutil.Amount(1e4)
 		currentBlock := int32(19432)
 		roundID := uint32(0)
 		_, err = pool.StartWithdrawal(ns, addrmgrNs,

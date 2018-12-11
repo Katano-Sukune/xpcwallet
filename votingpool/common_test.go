@@ -12,8 +12,8 @@ import (
 	"testing"
 
 	"github.com/btcsuite/btclog"
-	"github.com/ltcsuite/ltcwallet/waddrmgr"
-	"github.com/ltcsuite/ltcwallet/walletdb"
+	"github.com/qtumatomicswap/qtumwallet/waddrmgr"
+	"github.com/qtumatomicswap/qtumwallet/walletdb"
 )
 
 func init() {

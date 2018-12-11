@@ -16,7 +16,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/ltcsuite/ltcwallet/walletdb/walletdbtest"
+	"github.com/qtumatomicswap/qtumwallet/walletdb/walletdbtest"
 )
 
 // TestInterface performs all interfaces tests for this database driver.

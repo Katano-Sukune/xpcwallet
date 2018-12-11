@@ -12,10 +12,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ltcsuite/ltcd/chaincfg"
-	"github.com/ltcsuite/ltcd/chaincfg/chainhash"
-	"github.com/ltcsuite/ltcutil/hdkeychain"
-	"github.com/ltcsuite/ltcwallet/walletdb"
+	"github.com/qtumatomicswap/qtumd/chaincfg"
+	"github.com/qtumatomicswap/qtumd/chaincfg/chainhash"
+	"github.com/qtumatomicswap/qtumutil/hdkeychain"
+	"github.com/qtumatomicswap/qtumwallet/walletdb"
 )
 
 const (

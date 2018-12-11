@@ -13,20 +13,20 @@ import (
 	"golang.org/x/crypto/ssh/terminal"
 
 	"github.com/jessevdk/go-flags"
-	"github.com/ltcsuite/ltcd/btcjson"
-	"github.com/ltcsuite/ltcd/chaincfg/chainhash"
-	"github.com/ltcsuite/ltcd/rpcclient"
-	"github.com/ltcsuite/ltcd/txscript"
-	"github.com/ltcsuite/ltcd/wire"
-	"github.com/ltcsuite/ltcutil"
-	"github.com/ltcsuite/ltcwallet/internal/cfgutil"
-	"github.com/ltcsuite/ltcwallet/netparams"
-	"github.com/ltcsuite/ltcwallet/wallet/txauthor"
-	"github.com/ltcsuite/ltcwallet/wallet/txrules"
+	"github.com/qtumatomicswap/qtumd/btcjson"
+	"github.com/qtumatomicswap/qtumd/chaincfg/chainhash"
+	"github.com/qtumatomicswap/qtumd/rpcclient"
+	"github.com/qtumatomicswap/qtumd/txscript"
+	"github.com/qtumatomicswap/qtumd/wire"
+	"github.com/qtumatomicswap/qtumutil"
+	"github.com/qtumatomicswap/qtumwallet/internal/cfgutil"
+	"github.com/qtumatomicswap/qtumwallet/netparams"
+	"github.com/qtumatomicswap/qtumwallet/wallet/txauthor"
+	"github.com/qtumatomicswap/qtumwallet/wallet/txrules"
 )
 
 var (
-	walletDataDirectory = ltcutil.AppDataDir("btcwallet", false)
+	walletDataDirectory = qtumutil.AppDataDir("btcwallet", false)
 	newlineBytes        = []byte{'\n'}
 )
 
@@ -140,12 +140,12 @@ func (noInputValue) Error() string { return "no input value" }
 // looked up again by the wallet during the call to signrawtransaction.
 func makeInputSource(outputs []btcjson.ListUnspentResult) txauthor.InputSource {
 	var (
-		totalInputValue ltcutil.Amount
+		totalInputValue qtumutil.Amount
 		inputs          = make([]*wire.TxIn, 0, len(outputs))
 		sourceErr       error
 	)
 	for _, output := range outputs {
-		outputAmount, err := ltcutil.NewAmount(output.Amount)
+		outputAmount, err := qtumutil.NewAmount(output.Amount)
 		if err != nil {
 			sourceErr = fmt.Errorf(
 				"invalid amount `%v` in listunspent result",
@@ -178,7 +178,7 @@ func makeInputSource(outputs []btcjson.ListUnspentResult) txauthor.InputSource {
 		sourceErr = noInputValue{}
 	}
 
-	return func(ltcutil.Amount) (ltcutil.Amount, []*wire.TxIn, [][]byte, error) {
+	return func(qtumutil.Amount) (qtumutil.Amount, []*wire.TxIn, [][]byte, error) {
 		return totalInputValue, inputs, nil, sourceErr
 	}
 }
@@ -257,7 +257,7 @@ func sweep() error {
 		}
 	}
 
-	var totalSwept ltcutil.Amount
+	var totalSwept qtumutil.Amount
 	var numErrors int
 	var reportError = func(format string, args ...interface{}) {
 		fmt.Fprintf(os.Stderr, format, args...)
@@ -300,7 +300,7 @@ func sweep() error {
 			continue
 		}
 
-		outputAmount := ltcutil.Amount(tx.Tx.TxOut[0].Value)
+		outputAmount := qtumutil.Amount(tx.Tx.TxOut[0].Value)
 		fmt.Printf("Swept %v to destination account with transaction %v\n",
 			outputAmount, txHash)
 		totalSwept += outputAmount
@@ -330,8 +330,8 @@ func promptSecret(what string) (string, error) {
 	return string(input), nil
 }
 
-func saneOutputValue(amount ltcutil.Amount) bool {
-	return amount >= 0 && amount <= ltcutil.MaxSatoshi
+func saneOutputValue(amount qtumutil.Amount) bool {
+	return amount >= 0 && amount <= qtumutil.MaxSatoshi
 }
 
 func parseOutPoint(input *btcjson.ListUnspentResult) (wire.OutPoint, error) {

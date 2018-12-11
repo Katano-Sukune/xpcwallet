@@ -5,25 +5,25 @@
 package wallet
 
 import (
-	"github.com/ltcsuite/ltcd/wire"
-	"github.com/ltcsuite/ltcutil"
-	"github.com/ltcsuite/ltcwallet/chain"
-	"github.com/ltcsuite/ltcwallet/waddrmgr"
-	"github.com/ltcsuite/ltcwallet/walletdb"
-	"github.com/ltcsuite/ltcwallet/wtxmgr"
+	"github.com/qtumatomicswap/qtumd/wire"
+	"github.com/qtumatomicswap/qtumutil"
+	"github.com/qtumatomicswap/qtumwallet/chain"
+	"github.com/qtumatomicswap/qtumwallet/waddrmgr"
+	"github.com/qtumatomicswap/qtumwallet/walletdb"
+	"github.com/qtumatomicswap/qtumwallet/wtxmgr"
 )
 
 // RescanProgressMsg reports the current progress made by a rescan for a
 // set of wallet addresses.
 type RescanProgressMsg struct {
-	Addresses    []ltcutil.Address
+	Addresses    []qtumutil.Address
 	Notification *chain.RescanProgress
 }
 
 // RescanFinishedMsg reports the addresses that were rescanned when a
 // rescanfinished message was received rescanning a batch of addresses.
 type RescanFinishedMsg struct {
-	Addresses    []ltcutil.Address
+	Addresses    []qtumutil.Address
 	Notification *chain.RescanFinished
 }
 
@@ -34,7 +34,7 @@ type RescanFinishedMsg struct {
 // channel.
 type RescanJob struct {
 	InitialSync bool
-	Addrs       []ltcutil.Address
+	Addrs       []qtumutil.Address
 	OutPoints   []*wire.OutPoint
 	BlockStamp  waddrmgr.BlockStamp
 	err         chan error
@@ -44,7 +44,7 @@ type RescanJob struct {
 // together before a rescan is performed.
 type rescanBatch struct {
 	initialSync bool
-	addrs       []ltcutil.Address
+	addrs       []qtumutil.Address
 	outpoints   []*wire.OutPoint
 	bs          waddrmgr.BlockStamp
 	errChans    []chan error
@@ -264,7 +264,7 @@ out:
 // a wallet.  This is intended to be used to sync a wallet back up to the
 // current best block in the main chain, and is considered an initial sync
 // rescan.
-func (w *Wallet) Rescan(addrs []ltcutil.Address, unspent []wtxmgr.Credit) error {
+func (w *Wallet) Rescan(addrs []qtumutil.Address, unspent []wtxmgr.Credit) error {
 	outpoints := make([]*wire.OutPoint, len(unspent))
 	for i, output := range unspent {
 		outpoints[i] = &output.OutPoint

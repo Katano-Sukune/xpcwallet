@@ -20,9 +20,9 @@ import (
 	"time"
 
 	"github.com/btcsuite/websocket"
-	"github.com/ltcsuite/ltcd/btcjson"
-	"github.com/ltcsuite/ltcwallet/chain"
-	"github.com/ltcsuite/ltcwallet/wallet"
+	"github.com/qtumatomicswap/qtumd/btcjson"
+	"github.com/qtumatomicswap/qtumwallet/chain"
+	"github.com/qtumatomicswap/qtumwallet/wallet"
 )
 
 type websocketClient struct {

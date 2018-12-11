@@ -4,6 +4,6 @@
 
 package main
 
-import "github.com/ltcsuite/ltcwallet/netparams"
+import "github.com/qtumatomicswap/qtumwallet/netparams"
 
 var activeNet = &netparams.MainNetParams

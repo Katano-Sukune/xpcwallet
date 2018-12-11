@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/ltcsuite/ltcutil/hdkeychain"
+	"github.com/qtumatomicswap/qtumutil/hdkeychain"
 )
 
 var (

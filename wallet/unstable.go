@@ -6,9 +6,9 @@
 package wallet
 
 import (
-	"github.com/ltcsuite/ltcd/chaincfg/chainhash"
-	"github.com/ltcsuite/ltcwallet/walletdb"
-	"github.com/ltcsuite/ltcwallet/wtxmgr"
+	"github.com/qtumatomicswap/qtumd/chaincfg/chainhash"
+	"github.com/qtumatomicswap/qtumwallet/walletdb"
+	"github.com/qtumatomicswap/qtumwallet/wtxmgr"
 )
 
 type unstableAPI struct {

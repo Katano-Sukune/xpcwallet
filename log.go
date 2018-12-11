@@ -11,12 +11,12 @@ import (
 
 	"github.com/btcsuite/btclog"
 	"github.com/jrick/logrotate/rotator"
-	"github.com/ltcsuite/ltcd/rpcclient"
-	"github.com/ltcsuite/ltcwallet/chain"
-	"github.com/ltcsuite/ltcwallet/rpc/legacyrpc"
-	"github.com/ltcsuite/ltcwallet/rpc/rpcserver"
-	"github.com/ltcsuite/ltcwallet/wallet"
-	"github.com/ltcsuite/ltcwallet/wtxmgr"
+	"github.com/qtumatomicswap/qtumd/rpcclient"
+	"github.com/qtumatomicswap/qtumwallet/chain"
+	"github.com/qtumatomicswap/qtumwallet/rpc/legacyrpc"
+	"github.com/qtumatomicswap/qtumwallet/rpc/rpcserver"
+	"github.com/qtumatomicswap/qtumwallet/wallet"
+	"github.com/qtumatomicswap/qtumwallet/wtxmgr"
 )
 
 // logWriter implements an io.Writer that outputs to both standard output and

@@ -9,8 +9,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/ltcsuite/ltcutil/hdkeychain"
-	"github.com/ltcsuite/ltcwallet/waddrmgr"
+	"github.com/qtumatomicswap/qtumutil/hdkeychain"
+	"github.com/qtumatomicswap/qtumwallet/waddrmgr"
 )
 
 func TestPoolEnsureUsedAddr(t *testing.T) {

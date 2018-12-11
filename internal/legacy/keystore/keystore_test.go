@@ -11,11 +11,11 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/ltcsuite/ltcd/btcec"
-	"github.com/ltcsuite/ltcd/chaincfg"
-	"github.com/ltcsuite/ltcd/chaincfg/chainhash"
-	"github.com/ltcsuite/ltcd/txscript"
-	"github.com/ltcsuite/ltcutil"
+	"github.com/qtumatomicswap/qtumd/btcec"
+	"github.com/qtumatomicswap/qtumd/chaincfg"
+	"github.com/qtumatomicswap/qtumd/chaincfg/chainhash"
+	"github.com/qtumatomicswap/qtumd/txscript"
+	"github.com/qtumatomicswap/qtumutil"
 
 	"github.com/davecgh/go-spew/spew"
 )
@@ -578,7 +578,7 @@ func TestWatchingWalletExport(t *testing.T) {
 
 	// Test that ExtendActiveAddresses for the watching wallet match
 	// manually requested addresses of the original wallet.
-	var newAddrs []ltcutil.Address
+	var newAddrs []qtumutil.Address
 	for i := 0; i < 10; i++ {
 		addr, err := w.NextChainedAddress(createdAt)
 		if err != nil {
@@ -665,7 +665,7 @@ func TestWatchingWalletExport(t *testing.T) {
 		return
 	}
 	pk, _ := btcec.PrivKeyFromBytes(btcec.S256(), make([]byte, 32))
-	wif, err := ltcutil.NewWIF(pk, tstNetParams, true)
+	wif, err := qtumutil.NewWIF(pk, tstNetParams, true)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -704,7 +704,7 @@ func TestImportPrivateKey(t *testing.T) {
 	}
 
 	// import priv key
-	wif, err := ltcutil.NewWIF((*btcec.PrivateKey)(pk), tstNetParams, false)
+	wif, err := qtumutil.NewWIF((*btcec.PrivateKey)(pk), tstNetParams, false)
 	if err != nil {
 		t.Fatal(err)
 	}

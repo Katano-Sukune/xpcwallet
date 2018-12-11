@@ -8,10 +8,10 @@ package wallet
 import (
 	"errors"
 
-	"github.com/ltcsuite/ltcd/txscript"
-	"github.com/ltcsuite/ltcutil"
-	"github.com/ltcsuite/ltcwallet/waddrmgr"
-	"github.com/ltcsuite/ltcwallet/walletdb"
+	"github.com/qtumatomicswap/qtumd/txscript"
+	"github.com/qtumatomicswap/qtumutil"
+	"github.com/qtumatomicswap/qtumwallet/waddrmgr"
+	"github.com/qtumatomicswap/qtumwallet/walletdb"
 )
 
 // MakeMultiSigScript creates a multi-signature script that can be redeemed with
@@ -20,8 +20,8 @@ import (
 // otherwise an error is returned for a missing pubkey.
 //
 // This function only works with pubkeys and P2PKH addresses derived from them.
-func (w *Wallet) MakeMultiSigScript(addrs []ltcutil.Address, nRequired int) ([]byte, error) {
-	pubKeys := make([]*ltcutil.AddressPubKey, len(addrs))
+func (w *Wallet) MakeMultiSigScript(addrs []qtumutil.Address, nRequired int) ([]byte, error) {
+	pubKeys := make([]*qtumutil.AddressPubKey, len(addrs))
 
 	var dbtx walletdb.ReadTx
 	var addrmgrNs walletdb.ReadBucket
@@ -40,10 +40,10 @@ func (w *Wallet) MakeMultiSigScript(addrs []ltcutil.Address, nRequired int) ([]b
 			return nil, errors.New("cannot make multisig script for " +
 				"a non-secp256k1 public key or P2PKH address")
 
-		case *ltcutil.AddressPubKey:
+		case *qtumutil.AddressPubKey:
 			pubKeys[i] = addr
 
-		case *ltcutil.AddressPubKeyHash:
+		case *qtumutil.AddressPubKeyHash:
 			if dbtx == nil {
 				var err error
 				dbtx, err = w.db.BeginReadTx()
@@ -59,7 +59,7 @@ func (w *Wallet) MakeMultiSigScript(addrs []ltcutil.Address, nRequired int) ([]b
 			serializedPubKey := addrInfo.(waddrmgr.ManagedPubKeyAddress).
 				PubKey().SerializeCompressed()
 
-			pubKeyAddr, err := ltcutil.NewAddressPubKey(
+			pubKeyAddr, err := qtumutil.NewAddressPubKey(
 				serializedPubKey, w.chainParams)
 			if err != nil {
 				return nil, err
@@ -72,8 +72,8 @@ func (w *Wallet) MakeMultiSigScript(addrs []ltcutil.Address, nRequired int) ([]b
 }
 
 // ImportP2SHRedeemScript adds a P2SH redeem script to the wallet.
-func (w *Wallet) ImportP2SHRedeemScript(script []byte) (*ltcutil.AddressScriptHash, error) {
-	var p2shAddr *ltcutil.AddressScriptHash
+func (w *Wallet) ImportP2SHRedeemScript(script []byte) (*qtumutil.AddressScriptHash, error) {
+	var p2shAddr *qtumutil.AddressScriptHash
 	err := walletdb.Update(w.db, func(tx walletdb.ReadWriteTx) error {
 		addrmgrNs := tx.ReadWriteBucket(waddrmgrNamespaceKey)
 
@@ -91,14 +91,14 @@ func (w *Wallet) ImportP2SHRedeemScript(script []byte) (*ltcutil.AddressScriptHa
 			if waddrmgr.IsError(err, waddrmgr.ErrDuplicateAddress) {
 				// This function will never error as it always
 				// hashes the script to the correct length.
-				p2shAddr, _ = ltcutil.NewAddressScriptHash(script,
+				p2shAddr, _ = qtumutil.NewAddressScriptHash(script,
 					w.chainParams)
 				return nil
 			}
 			return err
 		}
 
-		p2shAddr = addrInfo.Address().(*ltcutil.AddressScriptHash)
+		p2shAddr = addrInfo.Address().(*qtumutil.AddressScriptHash)
 		return nil
 	})
 	return p2shAddr, err

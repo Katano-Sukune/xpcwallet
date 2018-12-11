@@ -9,12 +9,12 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/ltcsuite/ltcd/btcec"
-	"github.com/ltcsuite/ltcd/txscript"
-	"github.com/ltcsuite/ltcutil"
-	"github.com/ltcsuite/ltcutil/hdkeychain"
-	"github.com/ltcsuite/ltcwallet/internal/zero"
-	"github.com/ltcsuite/ltcwallet/walletdb"
+	"github.com/qtumatomicswap/qtumd/btcec"
+	"github.com/qtumatomicswap/qtumd/txscript"
+	"github.com/qtumatomicswap/qtumutil"
+	"github.com/qtumatomicswap/qtumutil/hdkeychain"
+	"github.com/qtumatomicswap/qtumwallet/internal/zero"
+	"github.com/qtumatomicswap/qtumwallet/walletdb"
 )
 
 // AddressType represents the various address types waddrmgr is currently able
@@ -60,8 +60,8 @@ type ManagedAddress interface {
 	// Account returns the account the address is associated with.
 	Account() uint32
 
-	// Address returns a ltcutil.Address for the backing address.
-	Address() ltcutil.Address
+	// Address returns a qtumutil.Address for the backing address.
+	Address() qtumutil.Address
 
 	// AddrHash returns the key or script hash related to the address
 	AddrHash() []byte
@@ -100,7 +100,7 @@ type ManagedPubKeyAddress interface {
 
 	// ExportPrivKey returns the private key associated with the address
 	// serialized as Wallet Import Format (WIF).
-	ExportPrivKey() (*ltcutil.WIF, error)
+	ExportPrivKey() (*qtumutil.WIF, error)
 
 	// IsNestedWitness returns true if the managed address is an instance of pw2wkh
 	// nested within p2sh.
@@ -125,7 +125,7 @@ type ManagedScriptAddress interface {
 type managedAddress struct {
 	manager          *Manager
 	account          uint32
-	address          ltcutil.Address
+	address          qtumutil.Address
 	imported         bool
 	internal         bool
 	compressed       bool
@@ -183,11 +183,11 @@ func (a *managedAddress) Account() uint32 {
 	return a.account
 }
 
-// Address returns the ltcutil.Address which represents the managed address.
+// Address returns the qtumutil.Address which represents the managed address.
 // This will be a pay-to-pubkey-hash address.
 //
 // This is part of the ManagedAddress interface implementation.
-func (a *managedAddress) Address() ltcutil.Address {
+func (a *managedAddress) Address() qtumutil.Address {
 	return a.address
 }
 
@@ -198,11 +198,11 @@ func (a *managedAddress) AddrHash() []byte {
 	var hash []byte
 
 	switch n := a.address.(type) {
-	case *ltcutil.AddressPubKeyHash:
+	case *qtumutil.AddressPubKeyHash:
 		hash = n.Hash160()[:]
-	case *ltcutil.AddressScriptHash:
+	case *qtumutil.AddressScriptHash:
 		hash = n.Hash160()[:]
-	case *ltcutil.AddressWitnessPubKeyHash:
+	case *qtumutil.AddressWitnessPubKeyHash:
 		hash = n.Hash160()[:]
 	}
 
@@ -298,13 +298,13 @@ func (a *managedAddress) PrivKey() (*btcec.PrivateKey, error) {
 // Import Format (WIF).
 //
 // This is part of the ManagedPubKeyAddress interface implementation.
-func (a *managedAddress) ExportPrivKey() (*ltcutil.WIF, error) {
+func (a *managedAddress) ExportPrivKey() (*qtumutil.WIF, error) {
 	pk, err := a.PrivKey()
 	if err != nil {
 		return nil, err
 	}
 
-	return ltcutil.NewWIF(pk, a.manager.chainParams, a.compressed)
+	return qtumutil.NewWIF(pk, a.manager.chainParams, a.compressed)
 }
 
 // IsNestedWitness returns true if the managed address is an instance of pw2wkh
@@ -327,12 +327,12 @@ func newManagedAddressWithoutPrivKey(m *Manager, account uint32, pubKey *btcec.P
 	// Create a pay-to-pubkey-hash address from the public key.
 	var pubKeyHash []byte
 	if compressed {
-		pubKeyHash = ltcutil.Hash160(pubKey.SerializeCompressed())
+		pubKeyHash = qtumutil.Hash160(pubKey.SerializeCompressed())
 	} else {
-		pubKeyHash = ltcutil.Hash160(pubKey.SerializeUncompressed())
+		pubKeyHash = qtumutil.Hash160(pubKey.SerializeUncompressed())
 	}
 
-	var address ltcutil.Address
+	var address qtumutil.Address
 	var err error
 
 	switch addrType {
@@ -344,7 +344,7 @@ func newManagedAddressWithoutPrivKey(m *Manager, account uint32, pubKey *btcec.P
 		// and malleability fixes.
 
 		// First, we'll generate a normal p2wkh address from the pubkey hash.
-		witAddr, err := ltcutil.NewAddressWitnessPubKeyHash(pubKeyHash, m.chainParams)
+		witAddr, err := qtumutil.NewAddressWitnessPubKeyHash(pubKeyHash, m.chainParams)
 		if err != nil {
 			return nil, err
 		}
@@ -360,7 +360,7 @@ func newManagedAddressWithoutPrivKey(m *Manager, account uint32, pubKey *btcec.P
 		// to a p2sh address. In order to spend, we first use the
 		// witnessProgram as the sigScript, then present the proper
 		// <sig, pubkey> pair as the witness.
-		address, err = ltcutil.NewAddressScriptHash(witnessProgram, m.chainParams)
+		address, err = qtumutil.NewAddressScriptHash(witnessProgram, m.chainParams)
 		if err != nil {
 			return nil, err
 		}
@@ -368,12 +368,12 @@ func newManagedAddressWithoutPrivKey(m *Manager, account uint32, pubKey *btcec.P
 		// TODO(roasbeef): truly proper?
 		fallthrough
 	case adtChain:
-		address, err = ltcutil.NewAddressPubKeyHash(pubKeyHash, m.chainParams)
+		address, err = qtumutil.NewAddressPubKeyHash(pubKeyHash, m.chainParams)
 		if err != nil {
 			return nil, err
 		}
 	case adtChainWitness:
-		address, err = ltcutil.NewAddressWitnessPubKeyHash(pubKeyHash, m.chainParams)
+		address, err = qtumutil.NewAddressWitnessPubKeyHash(pubKeyHash, m.chainParams)
 		if err != nil {
 			return nil, err
 		}
@@ -466,7 +466,7 @@ func newManagedAddressFromExtKey(m *Manager, account uint32,
 type scriptAddress struct {
 	manager         *Manager
 	account         uint32
-	address         *ltcutil.AddressScriptHash
+	address         *qtumutil.AddressScriptHash
 	scriptEncrypted []byte
 	scriptCT        []byte
 	scriptMutex     sync.Mutex
@@ -518,11 +518,11 @@ func (a *scriptAddress) Account() uint32 {
 	return a.account
 }
 
-// Address returns the ltcutil.Address which represents the managed address.
+// Address returns the qtumutil.Address which represents the managed address.
 // This will be a pay-to-script-hash address.
 //
 // This is part of the ManagedAddress interface implementation.
-func (a *scriptAddress) Address() ltcutil.Address {
+func (a *scriptAddress) Address() qtumutil.Address {
 	return a.address
 }
 
@@ -588,7 +588,7 @@ func (a *scriptAddress) Script() ([]byte, error) {
 
 // newScriptAddress initializes and returns a new pay-to-script-hash address.
 func newScriptAddress(m *Manager, account uint32, scriptHash, scriptEncrypted []byte) (*scriptAddress, error) {
-	address, err := ltcutil.NewAddressScriptHashFromHash(scriptHash,
+	address, err := qtumutil.NewAddressScriptHashFromHash(scriptHash,
 		m.chainParams)
 	if err != nil {
 		return nil, err

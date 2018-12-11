@@ -12,8 +12,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ltcsuite/ltcd/btcjson"
-	"github.com/ltcsuite/ltcwallet/internal/rpchelp"
+	"github.com/qtumatomicswap/qtumd/btcjson"
+	"github.com/qtumatomicswap/qtumwallet/internal/rpchelp"
 )
 
 var outputFile = func() *os.File {

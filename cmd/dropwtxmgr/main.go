@@ -11,14 +11,14 @@ import (
 	"path/filepath"
 
 	"github.com/jessevdk/go-flags"
-	"github.com/ltcsuite/ltcutil"
-	"github.com/ltcsuite/ltcwallet/walletdb"
-	_ "github.com/ltcsuite/ltcwallet/walletdb/bdb"
+	"github.com/qtumatomicswap/qtumutil"
+	"github.com/qtumatomicswap/qtumwallet/walletdb"
+	_ "github.com/qtumatomicswap/qtumwallet/walletdb/bdb"
 )
 
 const defaultNet = "mainnet"
 
-var datadir = ltcutil.AppDataDir("btcwallet", false)
+var datadir = qtumutil.AppDataDir("btcwallet", false)
 
 // Flags.
 var opts = struct {

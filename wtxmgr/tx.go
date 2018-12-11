@@ -9,12 +9,12 @@ import (
 	"bytes"
 	"time"
 
-	"github.com/ltcsuite/ltcd/blockchain"
-	"github.com/ltcsuite/ltcd/chaincfg"
-	"github.com/ltcsuite/ltcd/chaincfg/chainhash"
-	"github.com/ltcsuite/ltcd/wire"
-	"github.com/ltcsuite/ltcutil"
-	"github.com/ltcsuite/ltcwallet/walletdb"
+	"github.com/qtumatomicswap/qtumd/blockchain"
+	"github.com/qtumatomicswap/qtumd/chaincfg"
+	"github.com/qtumatomicswap/qtumd/chaincfg/chainhash"
+	"github.com/qtumatomicswap/qtumd/wire"
+	"github.com/qtumatomicswap/qtumutil"
+	"github.com/qtumatomicswap/qtumwallet/walletdb"
 )
 
 // Block contains the minimum amount of data to uniquely identify any block on
@@ -61,7 +61,7 @@ type indexedIncidence struct {
 type debit struct {
 	txHash chainhash.Hash
 	index  uint32
-	amount ltcutil.Amount
+	amount qtumutil.Amount
 	spends indexedIncidence
 }
 
@@ -69,7 +69,7 @@ type debit struct {
 type credit struct {
 	outPoint wire.OutPoint
 	block    Block
-	amount   ltcutil.Amount
+	amount   qtumutil.Amount
 	change   bool
 	spentBy  indexedIncidence // Index == ^uint32(0) if unspent
 }
@@ -124,7 +124,7 @@ func NewTxRecordFromMsgTx(msgTx *wire.MsgTx, received time.Time) (*TxRecord, err
 type Credit struct {
 	wire.OutPoint
 	BlockMeta
-	Amount       ltcutil.Amount
+	Amount       qtumutil.Amount
 	PkScript     []byte
 	Received     time.Time
 	FromCoinBase bool
@@ -461,7 +461,7 @@ func (s *Store) addCredit(ns walletdb.ReadWriteBucket, rec *TxRecord, block *Blo
 		if existsRawUnminedCredit(ns, k) != nil {
 			return false, nil
 		}
-		v := valueUnminedCredit(ltcutil.Amount(rec.MsgTx.TxOut[index].Value), change)
+		v := valueUnminedCredit(qtumutil.Amount(rec.MsgTx.TxOut[index].Value), change)
 		return true, putRawUnminedCredit(ns, k, v)
 	}
 
@@ -470,7 +470,7 @@ func (s *Store) addCredit(ns walletdb.ReadWriteBucket, rec *TxRecord, block *Blo
 		return false, nil
 	}
 
-	txOutAmt := ltcutil.Amount(rec.MsgTx.TxOut[index].Value)
+	txOutAmt := qtumutil.Amount(rec.MsgTx.TxOut[index].Value)
 	log.Debugf("Marking transaction %v output %d (%v) spendable",
 		rec.Hash, index, txOutAmt)
 
@@ -570,7 +570,7 @@ func (s *Store) rollback(ns walletdb.ReadWriteBucket, height int32) error {
 
 					unspentKey, credKey := existsUnspent(ns, &op)
 					if credKey != nil {
-						minedBalance -= ltcutil.Amount(output.Value)
+						minedBalance -= qtumutil.Amount(output.Value)
 						err = deleteRawUnspent(ns, unspentKey)
 						if err != nil {
 							return err
@@ -623,7 +623,7 @@ func (s *Store) rollback(ns walletdb.ReadWriteBucket, height int32) error {
 				// may have already been removed from a
 				// previously removed transaction record in
 				// this rollback.
-				var amt ltcutil.Amount
+				var amt qtumutil.Amount
 				amt, err = unspendRawCredit(ns, credKey)
 				if err != nil {
 					return err
@@ -682,7 +682,7 @@ func (s *Store) rollback(ns walletdb.ReadWriteBucket, height int32) error {
 
 				credKey := existsRawUnspent(ns, outPointKey)
 				if credKey != nil {
-					minedBalance -= ltcutil.Amount(output.Value)
+					minedBalance -= qtumutil.Amount(output.Value)
 					err = deleteRawUnspent(ns, outPointKey)
 					if err != nil {
 						return err
@@ -778,7 +778,7 @@ func (s *Store) UnspentOutputs(ns walletdb.ReadBucket) ([]Credit, error) {
 				Block: block,
 				Time:  blockTime,
 			},
-			Amount:       ltcutil.Amount(txOut.Value),
+			Amount:       qtumutil.Amount(txOut.Value),
 			PkScript:     txOut.PkScript,
 			Received:     rec.Received,
 			FromCoinBase: blockchain.IsCoinBaseTx(&rec.MsgTx),
@@ -821,7 +821,7 @@ func (s *Store) UnspentOutputs(ns walletdb.ReadBucket) ([]Credit, error) {
 			BlockMeta: BlockMeta{
 				Block: Block{Height: -1},
 			},
-			Amount:       ltcutil.Amount(txOut.Value),
+			Amount:       qtumutil.Amount(txOut.Value),
 			PkScript:     txOut.PkScript,
 			Received:     rec.Received,
 			FromCoinBase: blockchain.IsCoinBaseTx(&rec.MsgTx),
@@ -847,7 +847,7 @@ func (s *Store) UnspentOutputs(ns walletdb.ReadBucket) ([]Credit, error) {
 //
 // Balance may return unexpected results if syncHeight is lower than the block
 // height of the most recent mined transaction in the store.
-func (s *Store) Balance(ns walletdb.ReadBucket, minConf int32, syncHeight int32) (ltcutil.Amount, error) {
+func (s *Store) Balance(ns walletdb.ReadBucket, minConf int32, syncHeight int32) (qtumutil.Amount, error) {
 	bal, err := fetchMinedBalance(ns)
 	if err != nil {
 		return 0, err

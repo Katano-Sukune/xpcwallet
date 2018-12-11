@@ -13,9 +13,9 @@ import (
 	"runtime"
 	"sync"
 
-	"github.com/ltcsuite/ltcwallet/chain"
-	"github.com/ltcsuite/ltcwallet/rpc/legacyrpc"
-	"github.com/ltcsuite/ltcwallet/wallet"
+	"github.com/qtumatomicswap/qtumwallet/chain"
+	"github.com/qtumatomicswap/qtumwallet/rpc/legacyrpc"
+	"github.com/qtumatomicswap/qtumwallet/wallet"
 )
 
 var (

@@ -11,11 +11,11 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/ltcsuite/ltcd/chaincfg"
-	"github.com/ltcsuite/ltcd/chaincfg/chainhash"
-	"github.com/ltcsuite/ltcutil"
-	"github.com/ltcsuite/ltcwallet/waddrmgr"
-	"github.com/ltcsuite/ltcwallet/walletdb"
+	"github.com/qtumatomicswap/qtumd/chaincfg"
+	"github.com/qtumatomicswap/qtumd/chaincfg/chainhash"
+	"github.com/qtumatomicswap/qtumutil"
+	"github.com/qtumatomicswap/qtumwallet/waddrmgr"
+	"github.com/qtumatomicswap/qtumwallet/walletdb"
 )
 
 // newHash converts the passed big-endian hex string into a chainhash.Hash.
@@ -348,7 +348,7 @@ func testExternalAddresses(tc *testContext) bool {
 		chainParams := tc.manager.ChainParams()
 		for i := 0; i < len(expectedExternalAddrs); i++ {
 			pkHash := expectedExternalAddrs[i].addressHash
-			utilAddr, err := ltcutil.NewAddressPubKeyHash(pkHash,
+			utilAddr, err := qtumutil.NewAddressPubKeyHash(pkHash,
 				chainParams)
 			if err != nil {
 				tc.t.Errorf("%s NewAddressPubKeyHash #%d: "+
@@ -499,7 +499,7 @@ func testInternalAddresses(tc *testContext) bool {
 		chainParams := tc.manager.ChainParams()
 		for i := 0; i < len(expectedInternalAddrs); i++ {
 			pkHash := expectedInternalAddrs[i].addressHash
-			utilAddr, err := ltcutil.NewAddressPubKeyHash(pkHash,
+			utilAddr, err := qtumutil.NewAddressPubKeyHash(pkHash,
 				chainParams)
 			if err != nil {
 				tc.t.Errorf("%s NewAddressPubKeyHash #%d: "+
@@ -716,7 +716,7 @@ func testImportPrivateKey(tc *testContext) bool {
 	if tc.create {
 		for i, test := range tests {
 			test.expected.privKeyWIF = test.in
-			wif, err := ltcutil.DecodeWIF(test.in)
+			wif, err := qtumutil.DecodeWIF(test.in)
 			if err != nil {
 				tc.t.Errorf("%s DecodeWIF #%d (%s): unexpected "+
 					"error: %v", prefix, i, test.name, err)
@@ -752,7 +752,7 @@ func testImportPrivateKey(tc *testContext) bool {
 
 			// Use the Address API to retrieve each of the expected
 			// new addresses and ensure they're accurate.
-			utilAddr, err := ltcutil.NewAddressPubKeyHash(
+			utilAddr, err := qtumutil.NewAddressPubKeyHash(
 				test.expected.addressHash, chainParams)
 			if err != nil {
 				tc.t.Errorf("%s NewAddressPubKeyHash #%d (%s): "+
@@ -920,7 +920,7 @@ func testImportScript(tc *testContext) bool {
 
 			// Use the Address API to retrieve each of the expected
 			// new addresses and ensure they're accurate.
-			utilAddr, err := ltcutil.NewAddressScriptHash(test.in,
+			utilAddr, err := qtumutil.NewAddressScriptHash(test.in,
 				chainParams)
 			if err != nil {
 				tc.t.Errorf("%s NewAddressScriptHash #%d (%s): "+
@@ -1009,13 +1009,13 @@ func testMarkUsed(tc *testContext) bool {
 	for i, test := range tests {
 		addrHash := test.in
 
-		var addr ltcutil.Address
+		var addr qtumutil.Address
 		var err error
 		switch test.typ {
 		case addrPubKeyHash:
-			addr, err = ltcutil.NewAddressPubKeyHash(addrHash, chainParams)
+			addr, err = qtumutil.NewAddressPubKeyHash(addrHash, chainParams)
 		case addrScriptHash:
-			addr, err = ltcutil.NewAddressScriptHashFromHash(addrHash, chainParams)
+			addr, err = qtumutil.NewAddressScriptHashFromHash(addrHash, chainParams)
 		default:
 			panic("unreachable")
 		}
@@ -1352,7 +1352,7 @@ func testLookupAccount(tc *testContext) bool {
 	// Test account lookup for default account adddress
 	var expectedAccount uint32
 	for i, addr := range expectedAddrs {
-		addr, err := ltcutil.NewAddressPubKeyHash(addr.addressHash,
+		addr, err := qtumutil.NewAddressPubKeyHash(addr.addressHash,
 			tc.manager.ChainParams())
 		if err != nil {
 			tc.t.Errorf("AddrAccount #%d: unexpected error: %v", i, err)

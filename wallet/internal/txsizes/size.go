@@ -5,9 +5,9 @@
 package txsizes
 
 import (
-	"github.com/ltcsuite/ltcd/wire"
+	"github.com/qtumatomicswap/qtumd/wire"
 
-	h "github.com/ltcsuite/ltcwallet/internal/helpers"
+	h "github.com/qtumatomicswap/qtumwallet/internal/helpers"
 )
 
 // Worst case script and input/output size estimates.

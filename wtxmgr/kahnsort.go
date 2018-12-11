@@ -4,7 +4,7 @@
 
 package wtxmgr
 
-import "github.com/ltcsuite/ltcd/chaincfg/chainhash"
+import "github.com/qtumatomicswap/qtumd/chaincfg/chainhash"
 
 type graphNode struct {
 	value    *TxRecord

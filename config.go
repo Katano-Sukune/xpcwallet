@@ -15,11 +15,11 @@ import (
 	"strings"
 
 	flags "github.com/jessevdk/go-flags"
-	"github.com/ltcsuite/ltcutil"
-	"github.com/ltcsuite/ltcwallet/internal/cfgutil"
-	"github.com/ltcsuite/ltcwallet/internal/legacy/keystore"
-	"github.com/ltcsuite/ltcwallet/netparams"
-	"github.com/ltcsuite/ltcwallet/wallet"
+	"github.com/qtumatomicswap/qtumutil"
+	"github.com/qtumatomicswap/qtumwallet/internal/cfgutil"
+	"github.com/qtumatomicswap/qtumwallet/internal/legacy/keystore"
+	"github.com/qtumatomicswap/qtumwallet/netparams"
+	"github.com/qtumatomicswap/qtumwallet/wallet"
 )
 
 const (
@@ -35,8 +35,8 @@ const (
 )
 
 var (
-	btcdDefaultCAFile  = filepath.Join(ltcutil.AppDataDir("btcd", false), "rpc.cert")
-	defaultAppDataDir  = ltcutil.AppDataDir("btcwallet", false)
+	btcdDefaultCAFile  = filepath.Join(qtumutil.AppDataDir("btcd", false), "rpc.cert")
+	defaultAppDataDir  = qtumutil.AppDataDir("btcwallet", false)
 	defaultConfigFile  = filepath.Join(defaultAppDataDir, defaultConfigFilename)
 	defaultRPCKeyFile  = filepath.Join(defaultAppDataDir, "rpc.key")
 	defaultRPCCertFile = filepath.Join(defaultAppDataDir, "rpc.cert")

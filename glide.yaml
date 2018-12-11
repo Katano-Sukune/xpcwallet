@@ -1,4 +1,4 @@
-package: github.com/ltcsuite/ltcwallet
+package: github.com/qtumatomicswap/qtumwallet
 import:
 - package: github.com/boltdb/bolt
 - package: github.com/btcsuite/btclog
@@ -14,7 +14,7 @@ import:
   subpackages:
   - proto
 - package: github.com/jessevdk/go-flags
-- package: github.com/ltcsuite/ltcd
+- package: github.com/qtumatomicswap/qtumd
   subpackages:
   - blockchain
   - btcec
@@ -24,7 +24,7 @@ import:
   - rpcclient
   - txscript
   - wire
-- package: github.com/ltcsuite/ltcutil
+- package: github.com/qtumatomicswap/qtumutil
   subpackages:
   - hdkeychain
 - package: golang.org/x/crypto
