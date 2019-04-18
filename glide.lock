@@ -33,7 +33,7 @@ imports:
   - ptypes/timestamp
 - name: github.com/jessevdk/go-flags
   version: 6cf8f02b4ae8ba723ddc64dcfd403e530c06d927
-- name: github.com/qtumatomicswap/qtumd
+- name: github.com/Katano-Sukune/xpcd
   version: 92a0feb9b86f5971655013115ea4f95949403592
   subpackages:
   - blockchain
@@ -45,7 +45,7 @@ imports:
   - rpcclient
   - txscript
   - wire
-- name: github.com/qtumatomicswap/qtumutil
+- name: github.com/Katano-Sukune/xpcutil
   version: a88d7dfb1c02af5dffe005ad21f40c42d9fd5ad0
   subpackages:
   - base58

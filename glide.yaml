@@ -1,4 +1,4 @@
-package: github.com/qtumatomicswap/qtumwallet
+package: github.com/Katano-Sukune/xpcwallet
 import:
 - package: github.com/boltdb/bolt
 - package: github.com/btcsuite/btclog
@@ -14,7 +14,7 @@ import:
   subpackages:
   - proto
 - package: github.com/jessevdk/go-flags
-- package: github.com/qtumatomicswap/qtumd
+- package: github.com/Katano-Sukune/xpcd
   subpackages:
   - blockchain
   - btcec
@@ -24,7 +24,7 @@ import:
   - rpcclient
   - txscript
   - wire
-- package: github.com/qtumatomicswap/qtumutil
+- package: github.com/Katano-Sukune/xpcutil
   subpackages:
   - hdkeychain
 - package: golang.org/x/crypto

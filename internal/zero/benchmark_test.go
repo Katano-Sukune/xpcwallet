@@ -7,7 +7,7 @@ package zero_test
 import (
 	"testing"
 
-	. "github.com/qtumatomicswap/qtumwallet/internal/zero"
+	. "github.com/Katano-Sukune/xpcwallet/internal/zero"
 )
 
 var (

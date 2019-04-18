@@ -7,7 +7,7 @@ package votingpool_test
 import (
 	"testing"
 
-	vp "github.com/qtumatomicswap/qtumwallet/votingpool"
+	vp "github.com/Katano-Sukune/xpcwallet/votingpool"
 )
 
 // TestErrorCodeStringer tests that all error codes has a text

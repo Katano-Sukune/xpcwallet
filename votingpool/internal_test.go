@@ -5,10 +5,10 @@
 package votingpool
 
 import (
-	"github.com/qtumatomicswap/qtumd/wire"
-	"github.com/qtumatomicswap/qtumutil/hdkeychain"
-	"github.com/qtumatomicswap/qtumwallet/waddrmgr"
-	"github.com/qtumatomicswap/qtumwallet/walletdb"
+	"github.com/Katano-Sukune/xpcd/wire"
+	"github.com/Katano-Sukune/xpcutil/hdkeychain"
+	"github.com/Katano-Sukune/xpcwallet/waddrmgr"
+	"github.com/Katano-Sukune/xpcwallet/walletdb"
 )
 
 var TstLastErr = lastErr

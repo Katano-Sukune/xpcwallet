@@ -5,9 +5,9 @@
 package txsizes
 
 import (
-	"github.com/qtumatomicswap/qtumd/wire"
+	"github.com/Katano-Sukune/xpcd/wire"
 
-	h "github.com/qtumatomicswap/qtumwallet/internal/helpers"
+	h "github.com/Katano-Sukune/xpcwallet/internal/helpers"
 )
 
 // Worst case script and input/output size estimates.

@@ -9,7 +9,7 @@ import (
 	"os"
 	"reflect"
 
-	"github.com/qtumatomicswap/qtumwallet/walletdb"
+	"github.com/Katano-Sukune/xpcwallet/walletdb"
 )
 
 // errSubTestFail is used to signal that a sub test returned false.

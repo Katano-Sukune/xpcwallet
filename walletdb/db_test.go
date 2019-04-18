@@ -9,8 +9,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/qtumatomicswap/qtumwallet/walletdb"
-	_ "github.com/qtumatomicswap/qtumwallet/walletdb/bdb"
+	"github.com/Katano-Sukune/xpcwallet/walletdb"
+	_ "github.com/Katano-Sukune/xpcwallet/walletdb/bdb"
 )
 
 var (

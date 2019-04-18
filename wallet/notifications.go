@@ -8,13 +8,13 @@ import (
 	"bytes"
 	"sync"
 
-	"github.com/qtumatomicswap/qtumd/chaincfg/chainhash"
-	"github.com/qtumatomicswap/qtumd/txscript"
-	"github.com/qtumatomicswap/qtumd/wire"
-	"github.com/qtumatomicswap/qtumutil"
-	"github.com/qtumatomicswap/qtumwallet/waddrmgr"
-	"github.com/qtumatomicswap/qtumwallet/walletdb"
-	"github.com/qtumatomicswap/qtumwallet/wtxmgr"
+	"github.com/Katano-Sukune/xpcd/chaincfg/chainhash"
+	"github.com/Katano-Sukune/xpcd/txscript"
+	"github.com/Katano-Sukune/xpcd/wire"
+	"github.com/Katano-Sukune/xpcutil"
+	"github.com/Katano-Sukune/xpcwallet/waddrmgr"
+	"github.com/Katano-Sukune/xpcwallet/walletdb"
+	"github.com/Katano-Sukune/xpcwallet/wtxmgr"
 )
 
 // TODO: It would be good to send errors during notification creation to the rpc
@@ -106,13 +106,13 @@ func makeTxSummary(dbtx walletdb.ReadTx, w *Wallet, details *wtxmgr.TxDetails) T
 		}
 		serializedTx = buf.Bytes()
 	}
-	var fee qtumutil.Amount
+	var fee xpcutil.Amount
 	if len(details.Debits) == len(details.MsgTx.TxIn) {
 		for _, deb := range details.Debits {
 			fee += deb.Amount
 		}
 		for _, txOut := range details.MsgTx.TxOut {
-			fee -= qtumutil.Amount(txOut.Value)
+			fee -= xpcutil.Amount(txOut.Value)
 		}
 	}
 	var inputs []TransactionSummaryInput
@@ -151,7 +151,7 @@ func makeTxSummary(dbtx walletdb.ReadTx, w *Wallet, details *wtxmgr.TxDetails) T
 	}
 }
 
-func totalBalances(dbtx walletdb.ReadTx, w *Wallet, m map[uint32]qtumutil.Amount) error {
+func totalBalances(dbtx walletdb.ReadTx, w *Wallet, m map[uint32]xpcutil.Amount) error {
 	addrmgrNs := dbtx.ReadBucket(waddrmgrNamespaceKey)
 	unspent, err := w.TxStore.UnspentOutputs(dbtx.ReadBucket(wtxmgrNamespaceKey))
 	if err != nil {
@@ -175,7 +175,7 @@ func totalBalances(dbtx walletdb.ReadTx, w *Wallet, m map[uint32]qtumutil.Amount
 	return nil
 }
 
-func flattenBalanceMap(m map[uint32]qtumutil.Amount) []AccountBalance {
+func flattenBalanceMap(m map[uint32]xpcutil.Amount) []AccountBalance {
 	s := make([]AccountBalance, 0, len(m))
 	for k, v := range m {
 		s = append(s, AccountBalance{Account: k, TotalBalance: v})
@@ -183,7 +183,7 @@ func flattenBalanceMap(m map[uint32]qtumutil.Amount) []AccountBalance {
 	return s
 }
 
-func relevantAccounts(w *Wallet, m map[uint32]qtumutil.Amount, txs []TransactionSummary) {
+func relevantAccounts(w *Wallet, m map[uint32]xpcutil.Amount, txs []TransactionSummary) {
 	for _, tx := range txs {
 		for _, d := range tx.MyInputs {
 			m[d.PreviousAccount] = 0
@@ -214,7 +214,7 @@ func (s *NotificationServer) notifyUnminedTransaction(dbtx walletdb.ReadTx, deta
 		log.Errorf("Cannot fetch unmined transaction hashes: %v", err)
 		return
 	}
-	bals := make(map[uint32]qtumutil.Amount)
+	bals := make(map[uint32]xpcutil.Amount)
 	relevantAccounts(s.wallet, bals, unminedTxs)
 	err = totalBalances(dbtx, s.wallet, bals)
 	if err != nil {
@@ -303,7 +303,7 @@ func (s *NotificationServer) notifyAttachedBlock(dbtx walletdb.ReadTx, block *wt
 	}
 	s.currentTxNtfn.UnminedTransactionHashes = unminedHashes
 
-	bals := make(map[uint32]qtumutil.Amount)
+	bals := make(map[uint32]xpcutil.Amount)
 	for _, b := range s.currentTxNtfn.AttachedBlocks {
 		relevantAccounts(s.wallet, bals, b.Transactions)
 	}
@@ -362,7 +362,7 @@ type TransactionSummary struct {
 	Transaction []byte
 	MyInputs    []TransactionSummaryInput
 	MyOutputs   []TransactionSummaryOutput
-	Fee         qtumutil.Amount
+	Fee         xpcutil.Amount
 	Timestamp   int64
 }
 
@@ -373,7 +373,7 @@ type TransactionSummary struct {
 type TransactionSummaryInput struct {
 	Index           uint32
 	PreviousAccount uint32
-	PreviousAmount  qtumutil.Amount
+	PreviousAmount  xpcutil.Amount
 }
 
 // TransactionSummaryOutput describes wallet properties of a transaction output
@@ -391,7 +391,7 @@ type TransactionSummaryOutput struct {
 // so they are not included.
 type AccountBalance struct {
 	Account      uint32
-	TotalBalance qtumutil.Amount
+	TotalBalance xpcutil.Amount
 }
 
 // TransactionNotificationsClient receives TransactionNotifications from the

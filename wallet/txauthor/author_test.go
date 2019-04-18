@@ -7,15 +7,15 @@ package txauthor_test
 import (
 	"testing"
 
-	"github.com/qtumatomicswap/qtumd/wire"
-	"github.com/qtumatomicswap/qtumutil"
-	. "github.com/qtumatomicswap/qtumwallet/wallet/txauthor"
-	"github.com/qtumatomicswap/qtumwallet/wallet/txrules"
+	"github.com/Katano-Sukune/xpcd/wire"
+	"github.com/Katano-Sukune/xpcutil"
+	. "github.com/Katano-Sukune/xpcwallet/wallet/txauthor"
+	"github.com/Katano-Sukune/xpcwallet/wallet/txrules"
 
-	"github.com/qtumatomicswap/qtumwallet/wallet/internal/txsizes"
+	"github.com/Katano-Sukune/xpcwallet/wallet/internal/txsizes"
 )
 
-func p2pkhOutputs(amounts ...qtumutil.Amount) []*wire.TxOut {
+func p2pkhOutputs(amounts ...xpcutil.Amount) []*wire.TxOut {
 	v := make([]*wire.TxOut, 0, len(amounts))
 	for _, a := range amounts {
 		outScript := make([]byte, txsizes.P2PKHOutputSize)
@@ -26,14 +26,14 @@ func p2pkhOutputs(amounts ...qtumutil.Amount) []*wire.TxOut {
 
 func makeInputSource(unspents []*wire.TxOut) InputSource {
 	// Return outputs in order.
-	currentTotal := qtumutil.Amount(0)
+	currentTotal := xpcutil.Amount(0)
 	currentInputs := make([]*wire.TxIn, 0, len(unspents))
-	f := func(target qtumutil.Amount) (qtumutil.Amount, []*wire.TxIn, [][]byte, error) {
+	f := func(target xpcutil.Amount) (xpcutil.Amount, []*wire.TxIn, [][]byte, error) {
 		for currentTotal < target && len(unspents) != 0 {
 			u := unspents[0]
 			unspents = unspents[1:]
 			nextInput := wire.NewTxIn(&wire.OutPoint{}, nil)
-			currentTotal += qtumutil.Amount(u.Value)
+			currentTotal += xpcutil.Amount(u.Value)
 			currentInputs = append(currentInputs, nextInput)
 		}
 		return currentTotal, currentInputs, make([][]byte, len(currentInputs)), nil
@@ -45,8 +45,8 @@ func TestNewUnsignedTransaction(t *testing.T) {
 	tests := []struct {
 		UnspentOutputs   []*wire.TxOut
 		Outputs          []*wire.TxOut
-		RelayFee         qtumutil.Amount
-		ChangeAmount     qtumutil.Amount
+		RelayFee         xpcutil.Amount
+		ChangeAmount     xpcutil.Amount
 		InputSourceError bool
 		InputCount       int
 	}{
@@ -199,7 +199,7 @@ func TestNewUnsignedTransaction(t *testing.T) {
 				continue
 			}
 		} else {
-			changeAmount := qtumutil.Amount(tx.Tx.TxOut[tx.ChangeIndex].Value)
+			changeAmount := xpcutil.Amount(tx.Tx.TxOut[tx.ChangeIndex].Value)
 			if test.ChangeAmount == 0 {
 				t.Errorf("Test %d: Included change output with value %v but expected no change",
 					i, changeAmount)

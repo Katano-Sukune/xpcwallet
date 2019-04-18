@@ -8,17 +8,17 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/qtumatomicswap/qtumutil"
+	"github.com/Katano-Sukune/xpcutil"
 )
 
-// AmountFlag embeds a qtumutil.Amount and implements the flags.Marshaler and
+// AmountFlag embeds a xpcutil.Amount and implements the flags.Marshaler and
 // Unmarshaler interfaces so it can be used as a config struct field.
 type AmountFlag struct {
-	qtumutil.Amount
+	xpcutil.Amount
 }
 
-// NewAmountFlag creates an AmountFlag with a default qtumutil.Amount.
-func NewAmountFlag(defaultValue qtumutil.Amount) *AmountFlag {
+// NewAmountFlag creates an AmountFlag with a default xpcutil.Amount.
+func NewAmountFlag(defaultValue xpcutil.Amount) *AmountFlag {
 	return &AmountFlag{defaultValue}
 }
 
@@ -34,7 +34,7 @@ func (a *AmountFlag) UnmarshalFlag(value string) error {
 	if err != nil {
 		return err
 	}
-	amount, err := qtumutil.NewAmount(valueF64)
+	amount, err := xpcutil.NewAmount(valueF64)
 	if err != nil {
 		return err
 	}

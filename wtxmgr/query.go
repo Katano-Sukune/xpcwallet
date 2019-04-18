@@ -8,16 +8,16 @@ package wtxmgr
 import (
 	"fmt"
 
-	"github.com/qtumatomicswap/qtumd/chaincfg/chainhash"
-	"github.com/qtumatomicswap/qtumutil"
-	"github.com/qtumatomicswap/qtumwallet/walletdb"
+	"github.com/Katano-Sukune/xpcd/chaincfg/chainhash"
+	"github.com/Katano-Sukune/xpcutil"
+	"github.com/Katano-Sukune/xpcwallet/walletdb"
 )
 
 // CreditRecord contains metadata regarding a transaction credit for a known
 // transaction.  Further details may be looked up by indexing a wire.MsgTx.TxOut
 // with the Index field.
 type CreditRecord struct {
-	Amount qtumutil.Amount
+	Amount xpcutil.Amount
 	Index  uint32
 	Spent  bool
 	Change bool
@@ -27,7 +27,7 @@ type CreditRecord struct {
 // transaction.  Further details may be looked up by indexing a wire.MsgTx.TxIn
 // with the Index field.
 type DebitRecord struct {
-	Amount qtumutil.Amount
+	Amount xpcutil.Amount
 	Index  uint32
 }
 

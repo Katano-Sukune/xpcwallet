@@ -9,7 +9,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/qtumatomicswap/qtumwallet/walletdb"
+	"github.com/Katano-Sukune/xpcwallet/walletdb"
 )
 
 func TestPutUsedAddrHash(t *testing.T) {

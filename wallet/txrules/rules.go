@@ -9,17 +9,17 @@ package txrules
 import (
 	"errors"
 
-	"github.com/qtumatomicswap/qtumd/txscript"
-	"github.com/qtumatomicswap/qtumd/wire"
-	"github.com/qtumatomicswap/qtumutil"
+	"github.com/Katano-Sukune/xpcd/txscript"
+	"github.com/Katano-Sukune/xpcd/wire"
+	"github.com/Katano-Sukune/xpcutil"
 )
 
 // DefaultRelayFeePerKb is the default minimum relay fee policy for a mempool.
-const DefaultRelayFeePerKb qtumutil.Amount = 1e3
+const DefaultRelayFeePerKb xpcutil.Amount = 1e3
 
 // GetDustThreshold is used to define the amount below which output will be
 // determined as dust. Threshold is determined as 3 times the relay fee.
-func GetDustThreshold(scriptSize int, relayFeePerKb qtumutil.Amount) qtumutil.Amount {
+func GetDustThreshold(scriptSize int, relayFeePerKb xpcutil.Amount) xpcutil.Amount {
 	// Calculate the total (estimated) cost to the network.  This is
 	// calculated using the serialize size of the output plus the serial
 	// size of a transaction input which redeems it.  The output is assumed
@@ -30,21 +30,21 @@ func GetDustThreshold(scriptSize int, relayFeePerKb qtumutil.Amount) qtumutil.Am
 		scriptSize + 148
 
 	byteFee := relayFeePerKb / 1000
-	relayFee := qtumutil.Amount(totalSize) * byteFee
+	relayFee := xpcutil.Amount(totalSize) * byteFee
 	return 3 * relayFee
 }
 
 // IsDustAmount determines whether a transaction output value and script length would
 // cause the output to be considered dust.  Transactions with dust outputs are
 // not standard and are rejected by mempools with default policies.
-func IsDustAmount(amount qtumutil.Amount, scriptSize int, relayFeePerKb qtumutil.Amount) bool {
+func IsDustAmount(amount xpcutil.Amount, scriptSize int, relayFeePerKb xpcutil.Amount) bool {
 	return amount < GetDustThreshold(scriptSize, relayFeePerKb)
 }
 
 // IsDustOutput determines whether a transaction output is considered dust.
 // Transactions with dust outputs are not standard and are rejected by mempools
 // with default policies.
-func IsDustOutput(output *wire.TxOut, relayFeePerKb qtumutil.Amount) bool {
+func IsDustOutput(output *wire.TxOut, relayFeePerKb xpcutil.Amount) bool {
 	// Unspendable outputs which solely carry data are not checked for dust.
 	if txscript.GetScriptClass(output.PkScript) == txscript.NullDataTy {
 		return false
@@ -55,7 +55,7 @@ func IsDustOutput(output *wire.TxOut, relayFeePerKb qtumutil.Amount) bool {
 		return true
 	}
 
-	return IsDustAmount(qtumutil.Amount(output.Value), len(output.PkScript),
+	return IsDustAmount(xpcutil.Amount(output.Value), len(output.PkScript),
 		relayFeePerKb)
 }
 
@@ -68,11 +68,11 @@ var (
 
 // CheckOutput performs simple consensus and policy tests on a transaction
 // output.
-func CheckOutput(output *wire.TxOut, relayFeePerKb qtumutil.Amount) error {
+func CheckOutput(output *wire.TxOut, relayFeePerKb xpcutil.Amount) error {
 	if output.Value < 0 {
 		return ErrAmountNegative
 	}
-	if output.Value > qtumutil.MaxSatoshi {
+	if output.Value > xpcutil.MaxSatoshi {
 		return ErrAmountExceedsMax
 	}
 	if IsDustOutput(output, relayFeePerKb) {
@@ -83,15 +83,15 @@ func CheckOutput(output *wire.TxOut, relayFeePerKb qtumutil.Amount) error {
 
 // FeeForSerializeSize calculates the required fee for a transaction of some
 // arbitrary size given a mempool's relay fee policy.
-func FeeForSerializeSize(relayFeePerKb qtumutil.Amount, txSerializeSize int) qtumutil.Amount {
-	fee := relayFeePerKb * qtumutil.Amount(txSerializeSize) / 1000
+func FeeForSerializeSize(relayFeePerKb xpcutil.Amount, txSerializeSize int) xpcutil.Amount {
+	fee := relayFeePerKb * xpcutil.Amount(txSerializeSize) / 1000
 
 	if fee == 0 && relayFeePerKb > 0 {
 		fee = relayFeePerKb
 	}
 
-	if fee < 0 || fee > qtumutil.MaxSatoshi {
-		fee = qtumutil.MaxSatoshi
+	if fee < 0 || fee > xpcutil.MaxSatoshi {
+		fee = xpcutil.MaxSatoshi
 	}
 
 	return fee

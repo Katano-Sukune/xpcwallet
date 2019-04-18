@@ -5,11 +5,11 @@
 package wallet
 
 import (
-	"github.com/qtumatomicswap/qtumd/txscript"
-	"github.com/qtumatomicswap/qtumwallet/chain"
-	"github.com/qtumatomicswap/qtumwallet/waddrmgr"
-	"github.com/qtumatomicswap/qtumwallet/walletdb"
-	"github.com/qtumatomicswap/qtumwallet/wtxmgr"
+	"github.com/Katano-Sukune/xpcd/txscript"
+	"github.com/Katano-Sukune/xpcwallet/chain"
+	"github.com/Katano-Sukune/xpcwallet/waddrmgr"
+	"github.com/Katano-Sukune/xpcwallet/walletdb"
+	"github.com/Katano-Sukune/xpcwallet/wtxmgr"
 )
 
 func (w *Wallet) handleChainNotifications() {

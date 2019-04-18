@@ -3,8 +3,8 @@ package txsizes_test
 import (
 	"testing"
 
-	"github.com/qtumatomicswap/qtumd/wire"
-	. "github.com/qtumatomicswap/qtumwallet/wallet/internal/txsizes"
+	"github.com/Katano-Sukune/xpcd/wire"
+	. "github.com/Katano-Sukune/xpcwallet/wallet/internal/txsizes"
 )
 
 const (

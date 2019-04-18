@@ -11,10 +11,10 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/qtumatomicswap/qtumd/chaincfg"
-	"github.com/qtumatomicswap/qtumwallet/waddrmgr"
-	"github.com/qtumatomicswap/qtumwallet/walletdb"
-	_ "github.com/qtumatomicswap/qtumwallet/walletdb/bdb"
+	"github.com/Katano-Sukune/xpcd/chaincfg"
+	"github.com/Katano-Sukune/xpcwallet/waddrmgr"
+	"github.com/Katano-Sukune/xpcwallet/walletdb"
+	_ "github.com/Katano-Sukune/xpcwallet/walletdb/bdb"
 )
 
 var (

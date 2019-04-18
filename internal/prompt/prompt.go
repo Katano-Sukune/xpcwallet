@@ -13,8 +13,8 @@ import (
 	"strings"
 
 	"github.com/btcsuite/golangcrypto/ssh/terminal"
-	"github.com/qtumatomicswap/qtumutil/hdkeychain"
-	"github.com/qtumatomicswap/qtumwallet/internal/legacy/keystore"
+	"github.com/Katano-Sukune/xpcutil/hdkeychain"
+	"github.com/Katano-Sukune/xpcwallet/internal/legacy/keystore"
 )
 
 // ProvideSeed is used to prompt for the wallet seed which maybe required during

@@ -11,11 +11,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/qtumatomicswap/qtumd/chaincfg/chainhash"
-	"github.com/qtumatomicswap/qtumd/wire"
-	"github.com/qtumatomicswap/qtumutil"
-	"github.com/qtumatomicswap/qtumwallet/walletdb"
-	. "github.com/qtumatomicswap/qtumwallet/wtxmgr"
+	"github.com/Katano-Sukune/xpcd/chaincfg/chainhash"
+	"github.com/Katano-Sukune/xpcd/wire"
+	"github.com/Katano-Sukune/xpcutil"
+	"github.com/Katano-Sukune/xpcwallet/walletdb"
+	. "github.com/Katano-Sukune/xpcwallet/wtxmgr"
 )
 
 type queryState struct {
@@ -310,7 +310,7 @@ func TestStoreQueries(t *testing.T) {
 	newState.blocks[0][0].Credits = []CreditRecord{
 		{
 			Index:  0,
-			Amount: qtumutil.Amount(recA.MsgTx.TxOut[0].Value),
+			Amount: xpcutil.Amount(recA.MsgTx.TxOut[0].Value),
 			Spent:  false,
 			Change: true,
 		},
@@ -334,7 +334,7 @@ func TestStoreQueries(t *testing.T) {
 		Block:    BlockMeta{Block: Block{Height: -1}},
 		Debits: []DebitRecord{
 			{
-				Amount: qtumutil.Amount(recA.MsgTx.TxOut[0].Value),
+				Amount: xpcutil.Amount(recA.MsgTx.TxOut[0].Value),
 				Index:  0, // recB.MsgTx.TxIn index
 			},
 		},
@@ -351,7 +351,7 @@ func TestStoreQueries(t *testing.T) {
 	newState.blocks[0][1].Credits = []CreditRecord{
 		{
 			Index:  0,
-			Amount: qtumutil.Amount(recB.MsgTx.TxOut[0].Value),
+			Amount: xpcutil.Amount(recB.MsgTx.TxOut[0].Value),
 			Spent:  false,
 			Change: false,
 		},

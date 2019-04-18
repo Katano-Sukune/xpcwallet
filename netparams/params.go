@@ -4,7 +4,7 @@
 
 package netparams
 
-import "github.com/qtumatomicswap/qtumd/chaincfg"
+import "github.com/Katano-Sukune/xpcd/chaincfg"
 
 // Params is used to group parameters for various networks such as the main
 // network and test networks.

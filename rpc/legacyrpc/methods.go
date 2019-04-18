@@ -15,19 +15,19 @@ import (
 	"sync"
 	"time"
 
-	"github.com/qtumatomicswap/qtumd/btcec"
-	"github.com/qtumatomicswap/qtumd/btcjson"
-	"github.com/qtumatomicswap/qtumd/chaincfg"
-	"github.com/qtumatomicswap/qtumd/chaincfg/chainhash"
-	"github.com/qtumatomicswap/qtumd/rpcclient"
-	"github.com/qtumatomicswap/qtumd/txscript"
-	"github.com/qtumatomicswap/qtumd/wire"
-	"github.com/qtumatomicswap/qtumutil"
-	"github.com/qtumatomicswap/qtumwallet/chain"
-	"github.com/qtumatomicswap/qtumwallet/waddrmgr"
-	"github.com/qtumatomicswap/qtumwallet/wallet"
-	"github.com/qtumatomicswap/qtumwallet/wallet/txrules"
-	"github.com/qtumatomicswap/qtumwallet/wtxmgr"
+	"github.com/Katano-Sukune/xpcd/btcec"
+	"github.com/Katano-Sukune/xpcd/btcjson"
+	"github.com/Katano-Sukune/xpcd/chaincfg"
+	"github.com/Katano-Sukune/xpcd/chaincfg/chainhash"
+	"github.com/Katano-Sukune/xpcd/rpcclient"
+	"github.com/Katano-Sukune/xpcd/txscript"
+	"github.com/Katano-Sukune/xpcd/wire"
+	"github.com/Katano-Sukune/xpcutil"
+	"github.com/Katano-Sukune/xpcwallet/chain"
+	"github.com/Katano-Sukune/xpcwallet/waddrmgr"
+	"github.com/Katano-Sukune/xpcwallet/wallet"
+	"github.com/Katano-Sukune/xpcwallet/wallet/txrules"
+	"github.com/Katano-Sukune/xpcwallet/wtxmgr"
 )
 
 // confirmed checks whether a transaction at height txHeight has met minconf
@@ -270,7 +270,7 @@ func jsonError(err error) *btcjson.RPCError {
 // makeMultiSigScript is a helper function to combine common logic for
 // AddMultiSig and CreateMultiSig.
 func makeMultiSigScript(w *wallet.Wallet, keys []string, nRequired int) ([]byte, error) {
-	keysesPrecious := make([]*qtumutil.AddressPubKey, len(keys))
+	keysesPrecious := make([]*xpcutil.AddressPubKey, len(keys))
 
 	// The address list will made up either of addreseses (pubkey hash), for
 	// which we need to look up the keys in wallet, straight pubkeys, or a
@@ -283,14 +283,14 @@ func makeMultiSigScript(w *wallet.Wallet, keys []string, nRequired int) ([]byte,
 		}
 
 		switch addr := a.(type) {
-		case *qtumutil.AddressPubKey:
+		case *xpcutil.AddressPubKey:
 			keysesPrecious[i] = addr
 		default:
 			pubKey, err := w.PubKeyForAddress(addr)
 			if err != nil {
 				return nil, err
 			}
-			pubKeyAddr, err := qtumutil.NewAddressPubKey(
+			pubKeyAddr, err := xpcutil.NewAddressPubKey(
 				pubKey.SerializeCompressed(), w.ChainParams())
 			if err != nil {
 				return nil, err
@@ -312,7 +312,7 @@ func addMultiSigAddress(icmd interface{}, w *wallet.Wallet) (interface{}, error)
 		return nil, &ErrNotImportedAccount
 	}
 
-	secp256k1Addrs := make([]qtumutil.Address, len(cmd.Keys))
+	secp256k1Addrs := make([]xpcutil.Address, len(cmd.Keys))
 	for i, k := range cmd.Keys {
 		addr, err := decodeAddress(k, w.ChainParams())
 		if err != nil {
@@ -344,7 +344,7 @@ func createMultiSig(icmd interface{}, w *wallet.Wallet) (interface{}, error) {
 		return nil, ParseError{err}
 	}
 
-	address, err := qtumutil.NewAddressScriptHash(script, w.ChainParams())
+	address, err := xpcutil.NewAddressScriptHash(script, w.ChainParams())
 	if err != nil {
 		// above is a valid script, shouldn't happen.
 		return nil, err
@@ -417,7 +417,7 @@ func getAddressesByAccount(icmd interface{}, w *wallet.Wallet) (interface{}, err
 func getBalance(icmd interface{}, w *wallet.Wallet) (interface{}, error) {
 	cmd := icmd.(*btcjson.GetBalanceCmd)
 
-	var balance qtumutil.Amount
+	var balance xpcutil.Amount
 	var err error
 	accountName := "*"
 	if cmd.Account != nil {
@@ -497,8 +497,8 @@ func getInfo(icmd interface{}, w *wallet.Wallet, chainClient *chain.RPCClient) (
 	return info, nil
 }
 
-func decodeAddress(s string, params *chaincfg.Params) (qtumutil.Address, error) {
-	addr, err := qtumutil.DecodeAddress(s, params)
+func decodeAddress(s string, params *chaincfg.Params) (xpcutil.Address, error) {
+	addr, err := xpcutil.DecodeAddress(s, params)
 	if err != nil {
 		msg := fmt.Sprintf("Invalid address %q: decode failed with %#q", s, err)
 		return nil, &btcjson.RPCError{
@@ -594,7 +594,7 @@ func importPrivKey(icmd interface{}, w *wallet.Wallet) (interface{}, error) {
 		return nil, &ErrNotImportedAccount
 	}
 
-	wif, err := qtumutil.DecodeWIF(cmd.PrivKey)
+	wif, err := xpcutil.DecodeWIF(cmd.PrivKey)
 	if err != nil {
 		return nil, &btcjson.RPCError{
 			Code:    btcjson.ErrRPCInvalidAddressOrKey,
@@ -810,9 +810,9 @@ func getTransaction(icmd interface{}, w *wallet.Wallet) (interface{}, error) {
 	}
 
 	var (
-		debitTotal  qtumutil.Amount
-		creditTotal qtumutil.Amount // Excludes change
-		fee         qtumutil.Amount
+		debitTotal  xpcutil.Amount
+		creditTotal xpcutil.Amount // Excludes change
+		fee         xpcutil.Amount
 		feeF64      float64
 	)
 	for _, deb := range details.Debits {
@@ -825,9 +825,9 @@ func getTransaction(icmd interface{}, w *wallet.Wallet) (interface{}, error) {
 	}
 	// Fee can only be determined if every input is a debit.
 	if len(details.Debits) == len(details.MsgTx.TxIn) {
-		var outputTotal qtumutil.Amount
+		var outputTotal xpcutil.Amount
 		for _, output := range details.MsgTx.TxOut {
-			outputTotal += qtumutil.Amount(output.Value)
+			outputTotal += xpcutil.Amount(output.Value)
 		}
 		fee = debitTotal - outputTotal
 		feeF64 = fee.ToBTC()
@@ -1087,7 +1087,7 @@ func listReceivedByAddress(icmd interface{}, w *wallet.Wallet) (interface{}, err
 	// Intermediate data for each address.
 	type AddrData struct {
 		// Total amount received.
-		amount qtumutil.Amount
+		amount xpcutil.Amount
 		// Number of confirmations of the last transaction.
 		confirmations int32
 		// Hashes of transactions which include an output paying to the address
@@ -1328,10 +1328,10 @@ func lockUnspent(icmd interface{}, w *wallet.Wallet) (interface{}, error) {
 // strings to amounts.  This is used to create the outputs to include in newly
 // created transactions from a JSON object describing the output destinations
 // and amounts.
-func makeOutputs(pairs map[string]qtumutil.Amount, chainParams *chaincfg.Params) ([]*wire.TxOut, error) {
+func makeOutputs(pairs map[string]xpcutil.Amount, chainParams *chaincfg.Params) ([]*wire.TxOut, error) {
 	outputs := make([]*wire.TxOut, 0, len(pairs))
 	for addrStr, amt := range pairs {
-		addr, err := qtumutil.DecodeAddress(addrStr, chainParams)
+		addr, err := xpcutil.DecodeAddress(addrStr, chainParams)
 		if err != nil {
 			return nil, fmt.Errorf("cannot decode address: %s", err)
 		}
@@ -1349,7 +1349,7 @@ func makeOutputs(pairs map[string]qtumutil.Amount, chainParams *chaincfg.Params)
 // sendPairs creates and sends payment transactions.
 // It returns the transaction hash in string format upon success
 // All errors are returned in btcjson.RPCError format
-func sendPairs(w *wallet.Wallet, amounts map[string]qtumutil.Amount,
+func sendPairs(w *wallet.Wallet, amounts map[string]xpcutil.Amount,
 	account uint32, minconf int32) (string, error) {
 	outputs, err := makeOutputs(amounts, w.ChainParams())
 	if err != nil {
@@ -1414,11 +1414,11 @@ func sendFrom(icmd interface{}, w *wallet.Wallet, chainClient *chain.RPCClient) 
 		return nil, ErrNeedPositiveMinconf
 	}
 	// Create map of address and amount pairs.
-	amt, err := qtumutil.NewAmount(cmd.Amount)
+	amt, err := xpcutil.NewAmount(cmd.Amount)
 	if err != nil {
 		return nil, err
 	}
-	pairs := map[string]qtumutil.Amount{
+	pairs := map[string]xpcutil.Amount{
 		cmd.ToAddress: amt,
 	}
 
@@ -1454,9 +1454,9 @@ func sendMany(icmd interface{}, w *wallet.Wallet) (interface{}, error) {
 	}
 
 	// Recreate address/amount pairs, using dcrutil.Amount.
-	pairs := make(map[string]qtumutil.Amount, len(cmd.Amounts))
+	pairs := make(map[string]xpcutil.Amount, len(cmd.Amounts))
 	for k, v := range cmd.Amounts {
-		amt, err := qtumutil.NewAmount(v)
+		amt, err := xpcutil.NewAmount(v)
 		if err != nil {
 			return nil, err
 		}
@@ -1483,7 +1483,7 @@ func sendToAddress(icmd interface{}, w *wallet.Wallet) (interface{}, error) {
 		}
 	}
 
-	amt, err := qtumutil.NewAmount(cmd.Amount)
+	amt, err := xpcutil.NewAmount(cmd.Amount)
 	if err != nil {
 		return nil, err
 	}
@@ -1494,7 +1494,7 @@ func sendToAddress(icmd interface{}, w *wallet.Wallet) (interface{}, error) {
 	}
 
 	// Mock up map of address and amount pairs.
-	pairs := map[string]qtumutil.Amount{
+	pairs := map[string]xpcutil.Amount{
 		cmd.Address: amt,
 	}
 
@@ -1511,7 +1511,7 @@ func setTxFee(icmd interface{}, w *wallet.Wallet) (interface{}, error) {
 		return nil, ErrNeedPositiveAmount
 	}
 
-	relayFee, err := qtumutil.NewAmount(cmd.Amount)
+	relayFee, err := xpcutil.NewAmount(cmd.Amount)
 	if err != nil {
 		return nil, err
 	}
@@ -1614,7 +1614,7 @@ func signRawTransaction(icmd interface{}, w *wallet.Wallet, chainClient *chain.R
 				return nil, err
 			}
 
-			addr, err := qtumutil.NewAddressScriptHash(redeemScript,
+			addr, err := xpcutil.NewAddressScriptHash(redeemScript,
 				w.ChainParams())
 			if err != nil {
 				return nil, DeserializationError{err}
@@ -1647,12 +1647,12 @@ func signRawTransaction(icmd interface{}, w *wallet.Wallet, chainClient *chain.R
 	// Parse list of private keys, if present. If there are any keys here
 	// they are the keys that we may use for signing. If empty we will
 	// use any keys known to us already.
-	var keys map[string]*qtumutil.WIF
+	var keys map[string]*xpcutil.WIF
 	if cmd.PrivKeys != nil {
-		keys = make(map[string]*qtumutil.WIF)
+		keys = make(map[string]*xpcutil.WIF)
 
 		for _, key := range *cmd.PrivKeys {
-			wif, err := qtumutil.DecodeWIF(key)
+			wif, err := xpcutil.DecodeWIF(key)
 			if err != nil {
 				return nil, DeserializationError{err}
 			}
@@ -1662,7 +1662,7 @@ func signRawTransaction(icmd interface{}, w *wallet.Wallet, chainClient *chain.R
 				return nil, DeserializationError{errors.New(s)}
 			}
 
-			addr, err := qtumutil.NewAddressPubKey(wif.SerializePubKey(),
+			addr, err := xpcutil.NewAddressPubKey(wif.SerializePubKey(),
 				w.ChainParams())
 			if err != nil {
 				return nil, DeserializationError{err}
@@ -1839,9 +1839,9 @@ func verifyMessage(icmd interface{}, w *wallet.Wallet) (interface{}, error) {
 	}
 	// Verify that the signed-by address matches the given address
 	switch checkAddr := addr.(type) {
-	case *qtumutil.AddressPubKeyHash: // ok
-		return bytes.Equal(qtumutil.Hash160(serializedPubKey), checkAddr.Hash160()[:]), nil
-	case *qtumutil.AddressPubKey: // ok
+	case *xpcutil.AddressPubKeyHash: // ok
+		return bytes.Equal(xpcutil.Hash160(serializedPubKey), checkAddr.Hash160()[:]), nil
+	case *xpcutil.AddressPubKey: // ok
 		return string(serializedPubKey) == checkAddr.String(), nil
 	default:
 		return nil, errors.New("address type not supported")

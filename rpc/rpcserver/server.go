@@ -8,11 +8,11 @@
 // Full documentation of the API implemented by this package is maintained in a
 // language-agnostic document:
 //
-//   https://github.com/qtumatomicswap/qtumwallet/blob/master/rpc/documentation/api.md
+//   https://github.com/Katano-Sukune/xpcwallet/blob/master/rpc/documentation/api.md
 //
 // Any API changes must be performed according to the steps listed here:
 //
-//   https://github.com/qtumatomicswap/qtumwallet/blob/master/rpc/documentation/serverchanges.md
+//   https://github.com/Katano-Sukune/xpcwallet/blob/master/rpc/documentation/serverchanges.md
 package rpcserver
 
 import (
@@ -25,20 +25,20 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 
-	"github.com/qtumatomicswap/qtumd/chaincfg/chainhash"
-	"github.com/qtumatomicswap/qtumd/rpcclient"
-	"github.com/qtumatomicswap/qtumd/txscript"
-	"github.com/qtumatomicswap/qtumd/wire"
-	"github.com/qtumatomicswap/qtumutil"
-	"github.com/qtumatomicswap/qtumutil/hdkeychain"
-	"github.com/qtumatomicswap/qtumwallet/chain"
-	"github.com/qtumatomicswap/qtumwallet/internal/cfgutil"
-	"github.com/qtumatomicswap/qtumwallet/internal/zero"
-	"github.com/qtumatomicswap/qtumwallet/netparams"
-	pb "github.com/qtumatomicswap/qtumwallet/rpc/walletrpc"
-	"github.com/qtumatomicswap/qtumwallet/waddrmgr"
-	"github.com/qtumatomicswap/qtumwallet/wallet"
-	"github.com/qtumatomicswap/qtumwallet/walletdb"
+	"github.com/Katano-Sukune/xpcd/chaincfg/chainhash"
+	"github.com/Katano-Sukune/xpcd/rpcclient"
+	"github.com/Katano-Sukune/xpcd/txscript"
+	"github.com/Katano-Sukune/xpcd/wire"
+	"github.com/Katano-Sukune/xpcutil"
+	"github.com/Katano-Sukune/xpcutil/hdkeychain"
+	"github.com/Katano-Sukune/xpcwallet/chain"
+	"github.com/Katano-Sukune/xpcwallet/internal/cfgutil"
+	"github.com/Katano-Sukune/xpcwallet/internal/zero"
+	"github.com/Katano-Sukune/xpcwallet/netparams"
+	pb "github.com/Katano-Sukune/xpcwallet/rpc/walletrpc"
+	"github.com/Katano-Sukune/xpcwallet/waddrmgr"
+	"github.com/Katano-Sukune/xpcwallet/wallet"
+	"github.com/Katano-Sukune/xpcwallet/walletdb"
 )
 
 // Public API version constants
@@ -226,7 +226,7 @@ func (s *walletServer) NextAddress(ctx context.Context, req *pb.NextAddressReque
 	*pb.NextAddressResponse, error) {
 
 	var (
-		addr qtumutil.Address
+		addr xpcutil.Address
 		err  error
 	)
 	switch req.Kind {
@@ -249,7 +249,7 @@ func (s *walletServer) ImportPrivateKey(ctx context.Context, req *pb.ImportPriva
 
 	defer zero.Bytes(req.Passphrase)
 
-	wif, err := qtumutil.DecodeWIF(req.PrivateKeyWif)
+	wif, err := xpcutil.DecodeWIF(req.PrivateKeyWif)
 	if err != nil {
 		return nil, grpc.Errorf(codes.InvalidArgument,
 			"Invalid WIF-encoded private key: %v", err)
@@ -330,7 +330,7 @@ func (s *walletServer) FundTransaction(ctx context.Context, req *pb.FundTransact
 	}
 
 	selectedOutputs := make([]*pb.FundTransactionResponse_PreviousOutput, 0, len(unspentOutputs))
-	var totalAmount qtumutil.Amount
+	var totalAmount xpcutil.Amount
 	for _, output := range unspentOutputs {
 		selectedOutputs = append(selectedOutputs, &pb.FundTransactionResponse_PreviousOutput{
 			TransactionHash: output.OutPoint.Hash[:],
@@ -340,15 +340,15 @@ func (s *walletServer) FundTransaction(ctx context.Context, req *pb.FundTransact
 			ReceiveTime:     output.ReceiveTime.Unix(),
 			FromCoinbase:    output.OutputKind == wallet.OutputKindCoinbase,
 		})
-		totalAmount += qtumutil.Amount(output.Output.Value)
+		totalAmount += xpcutil.Amount(output.Output.Value)
 
-		if req.TargetAmount != 0 && totalAmount > qtumutil.Amount(req.TargetAmount) {
+		if req.TargetAmount != 0 && totalAmount > xpcutil.Amount(req.TargetAmount) {
 			break
 		}
 	}
 
 	var changeScript []byte
-	if req.IncludeChangeScript && totalAmount > qtumutil.Amount(req.TargetAmount) {
+	if req.IncludeChangeScript && totalAmount > xpcutil.Amount(req.TargetAmount) {
 		changeAddr, err := s.wallet.NewChangeAddress(req.Account, waddrmgr.PubKeyHash)
 		if err != nil {
 			return nil, translateError(err)

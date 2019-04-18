@@ -16,7 +16,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/qtumatomicswap/qtumwallet/walletdb/walletdbtest"
+	"github.com/Katano-Sukune/xpcwallet/walletdb/walletdbtest"
 )
 
 // TestInterface performs all interfaces tests for this database driver.

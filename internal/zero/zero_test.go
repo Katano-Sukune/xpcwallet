@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/qtumatomicswap/qtumwallet/internal/zero"
+	. "github.com/Katano-Sukune/xpcwallet/internal/zero"
 )
 
 func makeOneBytes(n int) []byte {

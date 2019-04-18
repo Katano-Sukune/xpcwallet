@@ -13,22 +13,22 @@ import (
 	"sync"
 	"time"
 
-	"github.com/qtumatomicswap/qtumd/blockchain"
-	"github.com/qtumatomicswap/qtumd/btcec"
-	"github.com/qtumatomicswap/qtumd/btcjson"
-	"github.com/qtumatomicswap/qtumd/chaincfg"
-	"github.com/qtumatomicswap/qtumd/chaincfg/chainhash"
-	"github.com/qtumatomicswap/qtumd/rpcclient"
-	"github.com/qtumatomicswap/qtumd/txscript"
-	"github.com/qtumatomicswap/qtumd/wire"
-	"github.com/qtumatomicswap/qtumutil"
-	"github.com/qtumatomicswap/qtumutil/hdkeychain"
-	"github.com/qtumatomicswap/qtumwallet/chain"
-	"github.com/qtumatomicswap/qtumwallet/waddrmgr"
-	"github.com/qtumatomicswap/qtumwallet/wallet/txauthor"
-	"github.com/qtumatomicswap/qtumwallet/wallet/txrules"
-	"github.com/qtumatomicswap/qtumwallet/walletdb"
-	"github.com/qtumatomicswap/qtumwallet/wtxmgr"
+	"github.com/Katano-Sukune/xpcd/blockchain"
+	"github.com/Katano-Sukune/xpcd/btcec"
+	"github.com/Katano-Sukune/xpcd/btcjson"
+	"github.com/Katano-Sukune/xpcd/chaincfg"
+	"github.com/Katano-Sukune/xpcd/chaincfg/chainhash"
+	"github.com/Katano-Sukune/xpcd/rpcclient"
+	"github.com/Katano-Sukune/xpcd/txscript"
+	"github.com/Katano-Sukune/xpcd/wire"
+	"github.com/Katano-Sukune/xpcutil"
+	"github.com/Katano-Sukune/xpcutil/hdkeychain"
+	"github.com/Katano-Sukune/xpcwallet/chain"
+	"github.com/Katano-Sukune/xpcwallet/waddrmgr"
+	"github.com/Katano-Sukune/xpcwallet/wallet/txauthor"
+	"github.com/Katano-Sukune/xpcwallet/wallet/txrules"
+	"github.com/Katano-Sukune/xpcwallet/walletdb"
+	"github.com/Katano-Sukune/xpcwallet/wtxmgr"
 )
 
 const (
@@ -73,7 +73,7 @@ type Wallet struct {
 	chainClientSyncMtx sync.Mutex
 
 	lockedOutpoints map[wire.OutPoint]struct{}
-	relayFee        qtumutil.Amount
+	relayFee        xpcutil.Amount
 	relayFeeMu      sync.Mutex
 
 	// Channels for rescan processing.  Requests are added and merged with
@@ -198,7 +198,7 @@ func (w *Wallet) ChainClient() *chain.RPCClient {
 
 // RelayFee returns the current minimum relay fee (per kB of serialized
 // transaction) used when constructing transactions.
-func (w *Wallet) RelayFee() qtumutil.Amount {
+func (w *Wallet) RelayFee() xpcutil.Amount {
 	w.relayFeeMu.Lock()
 	relayFee := w.relayFee
 	w.relayFeeMu.Unlock()
@@ -207,7 +207,7 @@ func (w *Wallet) RelayFee() qtumutil.Amount {
 
 // SetRelayFee sets a new minimum relay fee (per kB of serialized
 // transaction) used when constructing transactions.
-func (w *Wallet) SetRelayFee(relayFee qtumutil.Amount) {
+func (w *Wallet) SetRelayFee(relayFee xpcutil.Amount) {
 	w.relayFeeMu.Lock()
 	w.relayFee = relayFee
 	w.relayFeeMu.Unlock()
@@ -299,12 +299,12 @@ func (w *Wallet) SetChainSynced(synced bool) {
 // activeData returns the currently-active receiving addresses and all unspent
 // outputs.  This is primarely intended to provide the parameters for a
 // rescan request.
-func (w *Wallet) activeData(dbtx walletdb.ReadTx) ([]qtumutil.Address, []wtxmgr.Credit, error) {
+func (w *Wallet) activeData(dbtx walletdb.ReadTx) ([]xpcutil.Address, []wtxmgr.Credit, error) {
 	addrmgrNs := dbtx.ReadBucket(waddrmgrNamespaceKey)
 	txmgrNs := dbtx.ReadBucket(wtxmgrNamespaceKey)
 
-	var addrs []qtumutil.Address
-	err := w.Manager.ForEachActiveAddress(addrmgrNs, func(addr qtumutil.Address) error {
+	var addrs []xpcutil.Address
+	err := w.Manager.ForEachActiveAddress(addrmgrNs, func(addr xpcutil.Address) error {
 		addrs = append(addrs, addr)
 		return nil
 	})
@@ -341,7 +341,7 @@ func (w *Wallet) syncWithChain() error {
 	// Request notifications for transactions sending to all wallet
 	// addresses.
 	var (
-		addrs   []qtumutil.Address
+		addrs   []xpcutil.Address
 		unspent []wtxmgr.Credit
 	)
 	err = walletdb.View(w.db, func(dbtx walletdb.ReadTx) error {
@@ -687,7 +687,7 @@ func (w *Wallet) accountUsed(addrmgrNs walletdb.ReadWriteBucket, account uint32)
 
 // AccountAddresses returns the addresses for every created address for an
 // account.
-func (w *Wallet) AccountAddresses(account uint32) (addrs []qtumutil.Address, err error) {
+func (w *Wallet) AccountAddresses(account uint32) (addrs []xpcutil.Address, err error) {
 	err = walletdb.View(w.db, func(tx walletdb.ReadTx) error {
 		addrmgrNs := tx.ReadBucket(waddrmgrNamespaceKey)
 		return w.Manager.ForEachAccountAddress(addrmgrNs, account, func(maddr waddrmgr.ManagedAddress) error {
@@ -706,8 +706,8 @@ func (w *Wallet) AccountAddresses(account uint32) (addrs []qtumutil.Address, err
 // a UTXO must be in a block.  If confirmations is 1 or greater,
 // the balance will be calculated based on how many how many blocks
 // include a UTXO.
-func (w *Wallet) CalculateBalance(confirms int32) (qtumutil.Amount, error) {
-	var balance qtumutil.Amount
+func (w *Wallet) CalculateBalance(confirms int32) (xpcutil.Amount, error) {
+	var balance xpcutil.Amount
 	err := walletdb.View(w.db, func(tx walletdb.ReadTx) error {
 		txmgrNs := tx.ReadBucket(wtxmgrNamespaceKey)
 		var err error
@@ -721,9 +721,9 @@ func (w *Wallet) CalculateBalance(confirms int32) (qtumutil.Amount, error) {
 // Balances records total, spendable (by policy), and immature coinbase
 // reward balance amounts.
 type Balances struct {
-	Total          qtumutil.Amount
-	Spendable      qtumutil.Amount
-	ImmatureReward qtumutil.Amount
+	Total          xpcutil.Amount
+	Spendable      xpcutil.Amount
+	ImmatureReward xpcutil.Amount
 }
 
 // CalculateAccountBalances sums the amounts of all unspent transaction
@@ -776,8 +776,8 @@ func (w *Wallet) CalculateAccountBalances(account uint32, confirms int32) (Balan
 // from a wallet.  If the address has already been used (there is at least
 // one transaction spending to it in the blockchain or btcd mempool), the next
 // chained address is returned.
-func (w *Wallet) CurrentAddress(account uint32) (qtumutil.Address, error) {
-	var addr qtumutil.Address
+func (w *Wallet) CurrentAddress(account uint32) (xpcutil.Address, error) {
+	var addr xpcutil.Address
 	err := walletdb.Update(w.db, func(tx walletdb.ReadWriteTx) error {
 		addrmgrNs := tx.ReadWriteBucket(waddrmgrNamespaceKey)
 		maddr, err := w.Manager.LastExternalAddress(addrmgrNs, account)
@@ -802,7 +802,7 @@ func (w *Wallet) CurrentAddress(account uint32) (qtumutil.Address, error) {
 }
 
 // PubKeyForAddress looks up the associated public key for a P2PKH address.
-func (w *Wallet) PubKeyForAddress(a qtumutil.Address) (*btcec.PublicKey, error) {
+func (w *Wallet) PubKeyForAddress(a xpcutil.Address) (*btcec.PublicKey, error) {
 	var pubKey *btcec.PublicKey
 	err := walletdb.View(w.db, func(tx walletdb.ReadTx) error {
 		addrmgrNs := tx.ReadBucket(waddrmgrNamespaceKey)
@@ -822,7 +822,7 @@ func (w *Wallet) PubKeyForAddress(a qtumutil.Address) (*btcec.PublicKey, error) 
 
 // PrivKeyForAddress looks up the associated private key for a P2PKH or P2PK
 // address.
-func (w *Wallet) PrivKeyForAddress(a qtumutil.Address) (*btcec.PrivateKey, error) {
+func (w *Wallet) PrivKeyForAddress(a xpcutil.Address) (*btcec.PrivateKey, error) {
 	var privKey *btcec.PrivateKey
 	err := walletdb.View(w.db, func(tx walletdb.ReadTx) error {
 		addrmgrNs := tx.ReadBucket(waddrmgrNamespaceKey)
@@ -841,7 +841,7 @@ func (w *Wallet) PrivKeyForAddress(a qtumutil.Address) (*btcec.PrivateKey, error
 }
 
 // HaveAddress returns whether the wallet is the owner of the address a.
-func (w *Wallet) HaveAddress(a qtumutil.Address) (bool, error) {
+func (w *Wallet) HaveAddress(a xpcutil.Address) (bool, error) {
 	err := walletdb.View(w.db, func(tx walletdb.ReadTx) error {
 		addrmgrNs := tx.ReadBucket(waddrmgrNamespaceKey)
 		_, err := w.Manager.Address(addrmgrNs, a)
@@ -858,7 +858,7 @@ func (w *Wallet) HaveAddress(a qtumutil.Address) (bool, error) {
 }
 
 // AccountOfAddress finds the account that an address is associated with.
-func (w *Wallet) AccountOfAddress(a qtumutil.Address) (uint32, error) {
+func (w *Wallet) AccountOfAddress(a xpcutil.Address) (uint32, error) {
 	var account uint32
 	err := walletdb.View(w.db, func(tx walletdb.ReadTx) error {
 		addrmgrNs := tx.ReadBucket(waddrmgrNamespaceKey)
@@ -870,7 +870,7 @@ func (w *Wallet) AccountOfAddress(a qtumutil.Address) (uint32, error) {
 }
 
 // AddressInfo returns detailed information regarding a wallet address.
-func (w *Wallet) AddressInfo(a qtumutil.Address) (waddrmgr.ManagedAddress, error) {
+func (w *Wallet) AddressInfo(a xpcutil.Address) (waddrmgr.ManagedAddress, error) {
 	var managedAddress waddrmgr.ManagedAddress
 	err := walletdb.View(w.db, func(tx walletdb.ReadTx) error {
 		addrmgrNs := tx.ReadBucket(waddrmgrNamespaceKey)
@@ -1044,13 +1044,13 @@ func listTransactions(tx walletdb.ReadTx, details *wtxmgr.TxDetails, addrMgr *wa
 	// Fee can only be determined if every input is a debit.
 	var feeF64 float64
 	if len(details.Debits) == len(details.MsgTx.TxIn) {
-		var debitTotal qtumutil.Amount
+		var debitTotal xpcutil.Amount
 		for _, deb := range details.Debits {
 			debitTotal += deb.Amount
 		}
-		var outputTotal qtumutil.Amount
+		var outputTotal xpcutil.Amount
 		for _, output := range details.MsgTx.TxOut {
-			outputTotal += qtumutil.Amount(output.Value)
+			outputTotal += xpcutil.Amount(output.Value)
 		}
 		// Note: The actual fee is debitTotal - outputTotal.  However,
 		// this RPC reports negative numbers for fees, so the inverse
@@ -1092,7 +1092,7 @@ outputs:
 			}
 		}
 
-		amountF64 := qtumutil.Amount(output.Value).ToBTC()
+		amountF64 := xpcutil.Amount(output.Value).ToBTC()
 		result := btcjson.ListTransactionsResult{
 			// Fields left zeroed:
 			//   InvolvesWatchOnly
@@ -1240,7 +1240,7 @@ func (w *Wallet) ListAddressTransactions(pkHashes map[string]struct{}) ([]btcjso
 					if err != nil || len(addrs) != 1 {
 						continue
 					}
-					apkh, ok := addrs[0].(*qtumutil.AddressPubKeyHash)
+					apkh, ok := addrs[0].(*xpcutil.AddressPubKeyHash)
 					if !ok {
 						continue
 					}
@@ -1422,7 +1422,7 @@ func (w *Wallet) GetTransactions(startBlock, endBlock *BlockIdentifier, cancel <
 // AccountResult is a single account result for the AccountsResult type.
 type AccountResult struct {
 	waddrmgr.AccountProperties
-	TotalBalance qtumutil.Amount
+	TotalBalance xpcutil.Amount
 }
 
 // AccountsResult is the resutl of the wallet's Accounts method.  See that
@@ -1470,7 +1470,7 @@ func (w *Wallet) Accounts() (*AccountsResult, error) {
 		if err != nil {
 			return err
 		}
-		m := make(map[uint32]*qtumutil.Amount)
+		m := make(map[uint32]*xpcutil.Amount)
 		for i := range accounts {
 			a := &accounts[i]
 			m[a.AccountNumber] = &a.TotalBalance
@@ -1502,7 +1502,7 @@ func (w *Wallet) Accounts() (*AccountsResult, error) {
 type AccountBalanceResult struct {
 	AccountNumber  uint32
 	AccountName    string
-	AccountBalance qtumutil.Amount
+	AccountBalance xpcutil.Amount
 }
 
 // AccountBalances returns all accounts in the wallet and their balances.
@@ -1760,7 +1760,7 @@ func (w *Wallet) DumpPrivKeys() ([]string, error) {
 		addrmgrNs := tx.ReadBucket(waddrmgrNamespaceKey)
 		// Iterate over each active address, appending the private key to
 		// privkeys.
-		return w.Manager.ForEachActiveAddress(addrmgrNs, func(addr qtumutil.Address) error {
+		return w.Manager.ForEachActiveAddress(addrmgrNs, func(addr xpcutil.Address) error {
 			ma, err := w.Manager.Address(addrmgrNs, addr)
 			if err != nil {
 				return err
@@ -1788,7 +1788,7 @@ func (w *Wallet) DumpPrivKeys() ([]string, error) {
 
 // DumpWIFPrivateKey returns the WIF encoded private key for a
 // single wallet address.
-func (w *Wallet) DumpWIFPrivateKey(addr qtumutil.Address) (string, error) {
+func (w *Wallet) DumpWIFPrivateKey(addr xpcutil.Address) (string, error) {
 	var maddr waddrmgr.ManagedAddress
 	err := walletdb.View(w.db, func(tx walletdb.ReadTx) error {
 		waddrmgrNs := tx.ReadBucket(waddrmgrNamespaceKey)
@@ -1815,7 +1815,7 @@ func (w *Wallet) DumpWIFPrivateKey(addr qtumutil.Address) (string, error) {
 
 // ImportPrivateKey imports a private key to the wallet and writes the new
 // wallet to disk.
-func (w *Wallet) ImportPrivateKey(wif *qtumutil.WIF, bs *waddrmgr.BlockStamp,
+func (w *Wallet) ImportPrivateKey(wif *xpcutil.WIF, bs *waddrmgr.BlockStamp,
 	rescan bool) (string, error) {
 
 	// The starting block for the key is the genesis block unless otherwise
@@ -1828,7 +1828,7 @@ func (w *Wallet) ImportPrivateKey(wif *qtumutil.WIF, bs *waddrmgr.BlockStamp,
 	}
 
 	// Attempt to import private key into wallet.
-	var addr qtumutil.Address
+	var addr xpcutil.Address
 	var props *waddrmgr.AccountProperties
 	err := walletdb.Update(w.db, func(tx walletdb.ReadWriteTx) error {
 		addrmgrNs := tx.ReadWriteBucket(waddrmgrNamespaceKey)
@@ -1848,7 +1848,7 @@ func (w *Wallet) ImportPrivateKey(wif *qtumutil.WIF, bs *waddrmgr.BlockStamp,
 	// imported address.
 	if rescan {
 		job := &RescanJob{
-			Addrs:      []qtumutil.Address{addr},
+			Addrs:      []xpcutil.Address{addr},
 			OutPoints:  nil,
 			BlockStamp: *bs,
 		}
@@ -1859,7 +1859,7 @@ func (w *Wallet) ImportPrivateKey(wif *qtumutil.WIF, bs *waddrmgr.BlockStamp,
 		// required to be read, so discard the return value.
 		_ = w.SubmitRescan(job)
 	} else {
-		err := w.chainClient.NotifyReceived([]qtumutil.Address{addr})
+		err := w.chainClient.NotifyReceived([]xpcutil.Address{addr})
 		if err != nil {
 			return "", fmt.Errorf("Failed to subscribe for address ntfns for "+
 				"address %s: %s", addr.EncodeAddress(), err)
@@ -1957,7 +1957,7 @@ func (w *Wallet) SortedActivePaymentAddresses() ([]string, error) {
 	var addrStrs []string
 	err := walletdb.View(w.db, func(tx walletdb.ReadTx) error {
 		addrmgrNs := tx.ReadBucket(waddrmgrNamespaceKey)
-		return w.Manager.ForEachActiveAddress(addrmgrNs, func(addr qtumutil.Address) error {
+		return w.Manager.ForEachActiveAddress(addrmgrNs, func(addr xpcutil.Address) error {
 			addrStrs = append(addrStrs, addr.EncodeAddress())
 			return nil
 		})
@@ -1971,7 +1971,7 @@ func (w *Wallet) SortedActivePaymentAddresses() ([]string, error) {
 }
 
 // NewAddress returns the next external chained address for a wallet.
-func (w *Wallet) NewAddress(account uint32, addrType waddrmgr.AddressType) (addr qtumutil.Address, err error) {
+func (w *Wallet) NewAddress(account uint32, addrType waddrmgr.AddressType) (addr xpcutil.Address, err error) {
 	err = walletdb.Update(w.db, func(tx walletdb.ReadWriteTx) error {
 		addrmgrNs := tx.ReadWriteBucket(waddrmgrNamespaceKey)
 		var err error
@@ -1982,7 +1982,7 @@ func (w *Wallet) NewAddress(account uint32, addrType waddrmgr.AddressType) (addr
 }
 
 func (w *Wallet) newAddress(addrmgrNs walletdb.ReadWriteBucket, account uint32,
-	addrType waddrmgr.AddressType) (qtumutil.Address, error) {
+	addrType waddrmgr.AddressType) (xpcutil.Address, error) {
 
 	// Get next address from wallet.
 	addrs, err := w.Manager.NextExternalAddresses(addrmgrNs, account, 1, addrType)
@@ -1991,7 +1991,7 @@ func (w *Wallet) newAddress(addrmgrNs walletdb.ReadWriteBucket, account uint32,
 	}
 
 	// Request updates from btcd for new transactions sent to this address.
-	utilAddrs := make([]qtumutil.Address, len(addrs))
+	utilAddrs := make([]xpcutil.Address, len(addrs))
 	for i, addr := range addrs {
 		utilAddrs[i] = addr.Address()
 	}
@@ -2017,7 +2017,7 @@ func (w *Wallet) newAddress(addrmgrNs walletdb.ReadWriteBucket, account uint32,
 }
 
 // NewChangeAddress returns a new change address for a wallet.
-func (w *Wallet) NewChangeAddress(account uint32, addrType waddrmgr.AddressType) (addr qtumutil.Address, err error) {
+func (w *Wallet) NewChangeAddress(account uint32, addrType waddrmgr.AddressType) (addr xpcutil.Address, err error) {
 	err = walletdb.Update(w.db, func(tx walletdb.ReadWriteTx) error {
 		addrmgrNs := tx.ReadWriteBucket(waddrmgrNamespaceKey)
 		var err error
@@ -2028,7 +2028,7 @@ func (w *Wallet) NewChangeAddress(account uint32, addrType waddrmgr.AddressType)
 }
 
 func (w *Wallet) newChangeAddress(addrmgrNs walletdb.ReadWriteBucket,
-	account uint32, addrType waddrmgr.AddressType) (qtumutil.Address, error) {
+	account uint32, addrType waddrmgr.AddressType) (xpcutil.Address, error) {
 
 	// Get next chained change address from wallet for account.
 	addrs, err := w.Manager.NextInternalAddresses(addrmgrNs, account, 1, addrType)
@@ -2037,7 +2037,7 @@ func (w *Wallet) newChangeAddress(addrmgrNs walletdb.ReadWriteBucket,
 	}
 
 	// Request updates from btcd for new transactions sent to this address.
-	utilAddrs := make([]qtumutil.Address, len(addrs))
+	utilAddrs := make([]xpcutil.Address, len(addrs))
 	for i, addr := range addrs {
 		utilAddrs[i] = addr.Address()
 	}
@@ -2076,7 +2076,7 @@ func confirms(txHeight, curHeight int32) int32 {
 type AccountTotalReceivedResult struct {
 	AccountNumber    uint32
 	AccountName      string
-	TotalReceived    qtumutil.Amount
+	TotalReceived    xpcutil.Amount
 	LastConfirmation int32
 }
 
@@ -2145,8 +2145,8 @@ func (w *Wallet) TotalReceivedForAccounts(minConf int32) ([]AccountTotalReceived
 // TotalReceivedForAddr iterates through a wallet's transaction history,
 // returning the total amount of bitcoins received for a single wallet
 // address.
-func (w *Wallet) TotalReceivedForAddr(addr qtumutil.Address, minConf int32) (qtumutil.Amount, error) {
-	var amount qtumutil.Amount
+func (w *Wallet) TotalReceivedForAddr(addr xpcutil.Address, minConf int32) (xpcutil.Amount, error) {
+	var amount xpcutil.Amount
 	err := walletdb.View(w.db, func(tx walletdb.ReadTx) error {
 		txmgrNs := tx.ReadBucket(wtxmgrNamespaceKey)
 
@@ -2264,7 +2264,7 @@ type SignatureError struct {
 // The transaction pointed to by tx is modified by this function.
 func (w *Wallet) SignTransaction(tx *wire.MsgTx, hashType txscript.SigHashType,
 	additionalPrevScripts map[wire.OutPoint][]byte,
-	additionalKeysByAddress map[string]*qtumutil.WIF,
+	additionalKeysByAddress map[string]*xpcutil.WIF,
 	p2shRedeemScriptsByAddress map[string][]byte) ([]SignatureError, error) {
 
 	var signErrors []SignatureError
@@ -2291,7 +2291,7 @@ func (w *Wallet) SignTransaction(tx *wire.MsgTx, hashType txscript.SigHashType,
 
 			// Set up our callbacks that we pass to txscript so it can
 			// look up the appropriate keys and scripts by address.
-			getKey := txscript.KeyClosure(func(addr qtumutil.Address) (*btcec.PrivateKey, bool, error) {
+			getKey := txscript.KeyClosure(func(addr xpcutil.Address) (*btcec.PrivateKey, bool, error) {
 				if len(additionalKeysByAddress) != 0 {
 					addrStr := addr.EncodeAddress()
 					wif, ok := additionalKeysByAddress[addrStr]
@@ -2319,7 +2319,7 @@ func (w *Wallet) SignTransaction(tx *wire.MsgTx, hashType txscript.SigHashType,
 
 				return key, pka.Compressed(), nil
 			})
-			getScript := txscript.ScriptClosure(func(addr qtumutil.Address) ([]byte, error) {
+			getScript := txscript.ScriptClosure(func(addr xpcutil.Address) ([]byte, error) {
 				// If keys were provided then we can only use the
 				// redeem scripts provided with our inputs, too.
 				if len(additionalKeysByAddress) != 0 {

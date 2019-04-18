@@ -10,16 +10,16 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/qtumatomicswap/qtumd/chaincfg/chainhash"
-	"github.com/qtumatomicswap/qtumd/wire"
-	"github.com/qtumatomicswap/qtumutil"
-	"github.com/qtumatomicswap/qtumwallet/walletdb"
-	"github.com/qtumatomicswap/qtumwallet/wtxmgr"
+	"github.com/Katano-Sukune/xpcd/chaincfg/chainhash"
+	"github.com/Katano-Sukune/xpcd/wire"
+	"github.com/Katano-Sukune/xpcutil"
+	"github.com/Katano-Sukune/xpcwallet/walletdb"
+	"github.com/Katano-Sukune/xpcwallet/wtxmgr"
 )
 
 var (
 	// random small number of satoshis used as dustThreshold
-	dustThreshold qtumutil.Amount = 1e4
+	dustThreshold xpcutil.Amount = 1e4
 )
 
 func TestGetEligibleInputs(t *testing.T) {

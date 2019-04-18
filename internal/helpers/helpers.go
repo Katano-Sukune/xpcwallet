@@ -7,14 +7,14 @@
 package helpers
 
 import (
-	"github.com/qtumatomicswap/qtumd/wire"
-	"github.com/qtumatomicswap/qtumutil"
+	"github.com/Katano-Sukune/xpcd/wire"
+	"github.com/Katano-Sukune/xpcutil"
 )
 
 // SumOutputValues sums up the list of TxOuts and returns an Amount.
-func SumOutputValues(outputs []*wire.TxOut) (totalOutput qtumutil.Amount) {
+func SumOutputValues(outputs []*wire.TxOut) (totalOutput xpcutil.Amount) {
 	for _, txOut := range outputs {
-		totalOutput += qtumutil.Amount(txOut.Value)
+		totalOutput += xpcutil.Amount(txOut.Value)
 	}
 	return totalOutput
 }

@@ -11,11 +11,11 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/qtumatomicswap/qtumutil/hdkeychain"
-	vp "github.com/qtumatomicswap/qtumwallet/votingpool"
-	"github.com/qtumatomicswap/qtumwallet/waddrmgr"
-	"github.com/qtumatomicswap/qtumwallet/walletdb"
-	_ "github.com/qtumatomicswap/qtumwallet/walletdb/bdb"
+	"github.com/Katano-Sukune/xpcutil/hdkeychain"
+	vp "github.com/Katano-Sukune/xpcwallet/votingpool"
+	"github.com/Katano-Sukune/xpcwallet/waddrmgr"
+	"github.com/Katano-Sukune/xpcwallet/walletdb"
+	_ "github.com/Katano-Sukune/xpcwallet/walletdb/bdb"
 )
 
 func TestLoadPoolAndDepositScript(t *testing.T) {

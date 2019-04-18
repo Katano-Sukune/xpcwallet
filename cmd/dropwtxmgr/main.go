@@ -11,14 +11,14 @@ import (
 	"path/filepath"
 
 	"github.com/jessevdk/go-flags"
-	"github.com/qtumatomicswap/qtumutil"
-	"github.com/qtumatomicswap/qtumwallet/walletdb"
-	_ "github.com/qtumatomicswap/qtumwallet/walletdb/bdb"
+	"github.com/Katano-Sukune/xpcutil"
+	"github.com/Katano-Sukune/xpcwallet/walletdb"
+	_ "github.com/Katano-Sukune/xpcwallet/walletdb/bdb"
 )
 
 const defaultNet = "mainnet"
 
-var datadir = qtumutil.AppDataDir("btcwallet", false)
+var datadir = xpcutil.AppDataDir("btcwallet", false)
 
 // Flags.
 var opts = struct {

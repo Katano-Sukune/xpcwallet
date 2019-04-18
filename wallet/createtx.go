@@ -9,14 +9,14 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/qtumatomicswap/qtumd/btcec"
-	"github.com/qtumatomicswap/qtumd/txscript"
-	"github.com/qtumatomicswap/qtumd/wire"
-	"github.com/qtumatomicswap/qtumutil"
-	"github.com/qtumatomicswap/qtumwallet/waddrmgr"
-	"github.com/qtumatomicswap/qtumwallet/wallet/txauthor"
-	"github.com/qtumatomicswap/qtumwallet/walletdb"
-	"github.com/qtumatomicswap/qtumwallet/wtxmgr"
+	"github.com/Katano-Sukune/xpcd/btcec"
+	"github.com/Katano-Sukune/xpcd/txscript"
+	"github.com/Katano-Sukune/xpcd/wire"
+	"github.com/Katano-Sukune/xpcutil"
+	"github.com/Katano-Sukune/xpcwallet/waddrmgr"
+	"github.com/Katano-Sukune/xpcwallet/wallet/txauthor"
+	"github.com/Katano-Sukune/xpcwallet/walletdb"
+	"github.com/Katano-Sukune/xpcwallet/wtxmgr"
 )
 
 // byAmount defines the methods needed to satisify sort.Interface to
@@ -34,13 +34,13 @@ func makeInputSource(eligible []wtxmgr.Credit) txauthor.InputSource {
 
 	// Current inputs and their total value.  These are closed over by the
 	// returned input source and reused across multiple calls.
-	currentTotal := qtumutil.Amount(0)
+	currentTotal := xpcutil.Amount(0)
 	currentInputs := make([]*wire.TxIn, 0, len(eligible))
 	currentScripts := make([][]byte, 0, len(eligible))
-	currentInputValues := make([]qtumutil.Amount, 0, len(eligible))
+	currentInputValues := make([]xpcutil.Amount, 0, len(eligible))
 
-	return func(target qtumutil.Amount) (qtumutil.Amount, []*wire.TxIn,
-		[]qtumutil.Amount, [][]byte, error) {
+	return func(target xpcutil.Amount) (xpcutil.Amount, []*wire.TxIn,
+		[]xpcutil.Amount, [][]byte, error) {
 
 		for currentTotal < target && len(eligible) != 0 {
 			nextCredit := &eligible[0]
@@ -62,7 +62,7 @@ type secretSource struct {
 	addrmgrNs walletdb.ReadBucket
 }
 
-func (s secretSource) GetKey(addr qtumutil.Address) (*btcec.PrivateKey, bool, error) {
+func (s secretSource) GetKey(addr xpcutil.Address) (*btcec.PrivateKey, bool, error) {
 	ma, err := s.Address(s.addrmgrNs, addr)
 	if err != nil {
 		return nil, false, err
@@ -81,7 +81,7 @@ func (s secretSource) GetKey(addr qtumutil.Address) (*btcec.PrivateKey, bool, er
 	return privKey, ma.Compressed(), nil
 }
 
-func (s secretSource) GetScript(addr qtumutil.Address) ([]byte, error) {
+func (s secretSource) GetScript(addr xpcutil.Address) ([]byte, error) {
 	ma, err := s.Address(s.addrmgrNs, addr)
 	if err != nil {
 		return nil, err
@@ -125,7 +125,7 @@ func (w *Wallet) txToOutputs(outputs []*wire.TxOut, account uint32, minconf int3
 		changeSource := func() ([]byte, error) {
 			// Derive the change output script.  As a hack to allow spending from
 			// the imported account, change addresses are created from account 0.
-			var changeAddr qtumutil.Address
+			var changeAddr xpcutil.Address
 			var err error
 			if account == waddrmgr.ImportedAddrAccount {
 				changeAddr, err = w.newChangeAddress(addrmgrNs, 0, waddrmgr.WitnessPubKey)
@@ -162,7 +162,7 @@ func (w *Wallet) txToOutputs(outputs []*wire.TxOut, account uint32, minconf int3
 	}
 
 	if tx.ChangeIndex >= 0 && account == waddrmgr.ImportedAddrAccount {
-		changeAmount := qtumutil.Amount(tx.Tx.TxOut[tx.ChangeIndex].Value)
+		changeAmount := xpcutil.Amount(tx.Tx.TxOut[tx.ChangeIndex].Value)
 		log.Warnf("Spend from imported account produced change: moving"+
 			" %v from imported account into default account.", changeAmount)
 	}
@@ -228,7 +228,7 @@ func (w *Wallet) findEligibleOutputs(dbtx walletdb.ReadTx, account uint32, minco
 // validateMsgTx verifies transaction input scripts for tx.  All previous output
 // scripts from outputs redeemed by the transaction, in the same order they are
 // spent, must be passed in the prevScripts slice.
-func validateMsgTx(tx *wire.MsgTx, prevScripts [][]byte, inputValues []qtumutil.Amount) error {
+func validateMsgTx(tx *wire.MsgTx, prevScripts [][]byte, inputValues []xpcutil.Amount) error {
 	hashCache := txscript.NewTxSigHashes(tx)
 	for i, prevScript := range prevScripts {
 		vm, err := txscript.NewEngine(prevScript, tx, i,

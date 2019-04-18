@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/qtumatomicswap/qtumwallet/waddrmgr"
+	"github.com/Katano-Sukune/xpcwallet/waddrmgr"
 )
 
 // TestErrorCodeStringer tests the stringized output for the ErrorCode type.

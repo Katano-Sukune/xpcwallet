@@ -7,7 +7,7 @@ package bdb
 import (
 	"fmt"
 
-	"github.com/qtumatomicswap/qtumwallet/walletdb"
+	"github.com/Katano-Sukune/xpcwallet/walletdb"
 )
 
 const (

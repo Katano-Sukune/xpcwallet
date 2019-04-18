@@ -6,9 +6,9 @@
 package wallet
 
 import (
-	"github.com/qtumatomicswap/qtumd/txscript"
-	"github.com/qtumatomicswap/qtumd/wire"
-	"github.com/qtumatomicswap/qtumwallet/walletdb"
+	"github.com/Katano-Sukune/xpcd/txscript"
+	"github.com/Katano-Sukune/xpcd/wire"
+	"github.com/Katano-Sukune/xpcwallet/walletdb"
 )
 
 // OutputSelectionPolicy describes the rules for selecting an output from the
